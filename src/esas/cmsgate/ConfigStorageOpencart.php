@@ -14,14 +14,16 @@ use Exception;
 class ConfigStorageOpencart extends ConfigStorageCms
 {
     private $config;
+    private $registry;
 
     /**
      * ConfigurationWrapperOpencart constructor.
      * @param $config
      */
-    public function __construct()
+    public function __construct($registry)
     {
         parent::__construct();
+        $this->registry = $registry;
         $loader = $this->registry->get("load");
         $loader->model('setting/setting');
         $this->config = $this->registry->get("model_setting_setting")->getSetting('hutkigrosh');

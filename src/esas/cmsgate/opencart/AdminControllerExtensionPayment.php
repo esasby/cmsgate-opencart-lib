@@ -1,6 +1,7 @@
 <?php
 namespace esas\cmsgate\opencart;
 
+use esas\cmsgate\ConfigStorageOpencart;
 use esas\cmsgate\utils\Logger as CmsgateLogger;
 use esas\cmsgate\Registry as CmsgateRegistry;
 use esas\cmsgate\utils\OpencartVersion;
@@ -21,7 +22,7 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
             $data['configForm'] = $configForm;// Сохранение или обновление данных
             if (($this->request->server['REQUEST_METHOD'] == 'POST') && ($configForm->getManagedFields()->validateAll($this->request->post))) {
                 $this->load->model('setting/setting');
-                $this->editSettings();
+                $this->model_setting_setting->editSetting(ConfigStorageOpencart::getSettingsName(), $this->request->post);
                 $this->session->data['success'] = $this->language->get('text_success');
                 $this->response->redirect($this->linkExtensionsPayment());
             }// Установка языковых констант
@@ -51,17 +52,6 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
             CmsgateLogger::getLogger("ControllerExtensionPaymentHutkiGrosh")->error("Exception", $e);
         } catch (Exception $e) { // для совместимости с php 5
             CmsgateLogger::getLogger("ControllerExtensionPaymentHutkiGrosh")->error("Exception", $e);
-        }
-    }
-
-    public function editSettings() {
-        switch (OpencartVersion::getVersion()){
-            case OpencartVersion::v2_3_x:
-                $this->model_setting_setting->editSetting($this->extensionName, $this->request->post);
-                return;
-            case OpencartVersion::v3_x:
-                $this->model_setting_setting->editSetting('payment_' . $this->extensionName, $this->request->post);
-                return;
         }
     }
 

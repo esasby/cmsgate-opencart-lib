@@ -11,7 +11,7 @@ namespace esas\cmsgate\utils;
 
 class OpencartVersion
 {
-    const v2_3_x = "3.x";
+    const v2_3_x = "2.3.x";
     const v3_x = "3.x";
 
 
@@ -20,7 +20,7 @@ class OpencartVersion
         if (preg_match("/2.3.*/", VERSION)) {
             return self::v2_3_x;
         } elseif (preg_match("/3.*/", VERSION)) {
-            return self::v2_3_x;
+            return self::v3_x;
         }
 
     }

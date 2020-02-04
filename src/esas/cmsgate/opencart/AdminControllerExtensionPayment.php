@@ -1,15 +1,21 @@
 <?php
+
 namespace esas\cmsgate\opencart;
 
-use esas\cmsgate\ConfigStorageOpencart;
-use esas\cmsgate\utils\Logger as CmsgateLogger;
 use esas\cmsgate\Registry as CmsgateRegistry;
+use esas\cmsgate\utils\Logger as CmsgateLogger;
 use esas\cmsgate\utils\OpencartVersion;
 use Exception;
 use Throwable as Th;
 
 class AdminControllerExtensionPayment extends ControllerExtensionPayment
 {
+
+    public function index()
+    {
+        $this->showSettings();
+    }
+
     /**
      * AdminControllerExtensionPayment constructor.
      */
@@ -18,35 +24,16 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
         try {
             $this->load->language('extension/payment/' . $this->extensionName);
             $this->document->setTitle($this->language->get('heading_title'));
-            $configForm = CmsgateRegistry::getRegistry()->getConfigForm();
-            $data['configForm'] = $configForm;// Сохранение или обновление данных
-            if (($this->request->server['REQUEST_METHOD'] == 'POST') && ($configForm->getManagedFields()->validateAll($this->request->post))) {
-                $this->load->model('setting/setting');
-                $this->model_setting_setting->editSetting(ConfigStorageOpencart::getSettingsName(), $this->request->post);
-                $this->session->data['success'] = $this->language->get('text_success');
-                $this->response->redirect($this->linkExtensionsPayment());
-            }// Установка языковых констант
             $data['heading_title'] = $this->language->get('heading_title');// Генерация хлебных крошек
-            $data['breadcrumbs'][] = array(
-                'text' => $this->language->get('text_home'),
-                'href' => $this->linkHome(),
-                'separator' => false
-            );
-            $data['breadcrumbs'][] = array(
-                'text' => $this->language->get('text_extension'),
-                'href' => $this->linkExtensionsPayment(),
-            );
-            $data['breadcrumbs'][] = array(
-                'text' => $this->language->get('heading_title'),
-                'href' => $this->linkExtensionSettings(),
-                'separator' => ' :: '
-            );// Кнопки
-            $data['action'] = $this->linkExtensionSettings();
+            $data['breadcrumbs'] = $this->createBreadcrumbs();
             $data['cancel'] = $this->linkExtensionsPayment();
             $data['header'] = $this->load->controller('common/header');
             $data['column_left'] = $this->load->controller('common/column_left');
             $data['footer'] = $this->load->controller('common/footer');
             $this->i18n($data, ['heading_title', 'text_status', 'text_enabled', 'text_disabled', 'text_save', 'text_cancel']);
+            $data['configForm'] = CmsgateRegistry::getRegistry()->getConfigForm();
+            $data['action'] = $this->linkExtensionSettings("savesettings");
+            $this->addExtraConfigForms();
             $this->response->setOutput($this->load->view($this->getView(), $data));
         } catch (Th $e) {
             CmsgateLogger::getLogger("ControllerExtensionPaymentHutkiGrosh")->error("Exception", $e);
@@ -55,8 +42,47 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
         }
     }
 
-    public function linkExtensionsPayment() {
-        switch (OpencartVersion::getVersion()){
+    /**
+     * При необходимости отображения дополнительный групп настроек, этот метод должен быть переопределен
+     */
+    public function addExtraConfigForms()
+    {
+    }
+
+    public function savesettings()
+    {
+        $configForm = CmsgateRegistry::getRegistry()->getConfigForm();
+        if (($this->request->server['REQUEST_METHOD'] == 'POST') && ($configForm->getManagedFields()->validateAll($this->request->post))) {
+            $this->load->model('setting/setting');
+            CmsgateRegistry::getRegistry()->getConfigWrapper()->saveConfigs($this->request->post);
+            $this->session->data['success'] = $this->language->get('text_success');
+            $this->response->redirect($this->linkExtensionsPayment());
+        } else
+            $this->showSettings();
+    }
+
+    protected function createBreadcrumbs()
+    {
+        $breadcrumbs[] = array(
+            'text' => $this->language->get('text_home'),
+            'href' => $this->linkHome(),
+            'separator' => false
+        );
+        $breadcrumbs[] = array(
+            'text' => $this->language->get('text_extension'),
+            'href' => $this->linkExtensionsPayment(),
+        );
+        $breadcrumbs[] = array(
+            'text' => $this->language->get('heading_title'),
+            'href' => $this->linkExtensionSettings(),
+            'separator' => ' :: '
+        );// Кнопки
+        return $breadcrumbs;
+    }
+
+    protected function linkExtensionsPayment()
+    {
+        switch (OpencartVersion::getVersion()) {
             case OpencartVersion::v2_3_x:
                 return $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=payment', 'SSL');
             case OpencartVersion::v3_x:
@@ -64,17 +90,19 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
         }
     }
 
-    public function linkExtensionSettings() {
-        switch (OpencartVersion::getVersion()){
+    protected function linkExtensionSettings($action = null)
+    {
+        switch (OpencartVersion::getVersion()) {
             case OpencartVersion::v2_3_x:
-                return $this->url->link('extension/payment/' . $this->extensionName, 'token=' . $this->session->data['token'], 'SSL');
+                return $this->url->link('extension/payment/' . $this->extensionName . $action != null ? $action : "", 'token=' . $this->session->data['token'], 'SSL');
             case OpencartVersion::v3_x:
-                return $this->url->link('extension/payment/' . $this->extensionName, 'user_token=' . $this->session->data['user_token'], true);
+                return $this->url->link('extension/payment/' . $this->extensionName . $action != null ? $action : "", 'user_token=' . $this->session->data['user_token'], true);
         }
     }
 
-    public function linkHome() {
-        switch (OpencartVersion::getVersion()){
+    protected function linkHome()
+    {
+        switch (OpencartVersion::getVersion()) {
             case OpencartVersion::v2_3_x:
                 return $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL');
             case OpencartVersion::v3_x:

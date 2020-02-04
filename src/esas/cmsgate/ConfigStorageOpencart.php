@@ -16,6 +16,7 @@ class ConfigStorageOpencart extends ConfigStorageCms
 {
     private $config;
     private $registry;
+    private $model_setting_setting;
 
     /**
      * ConfigurationWrapperOpencart constructor.
@@ -27,7 +28,8 @@ class ConfigStorageOpencart extends ConfigStorageCms
         $this->registry = $registry;
         $loader = $this->registry->get("load");
         $loader->model('setting/setting');
-        $this->config = $this->registry->get("model_setting_setting")->getSetting(self::getSettingsName());
+        $this->model_setting_setting = $this->registry->get("model_setting_setting");
+        $this->config = $this->model_setting_setting->getSetting(self::getSettingsName());
     }
 
     public static function getSettingsName() {
@@ -65,5 +67,16 @@ class ConfigStorageOpencart extends ConfigStorageCms
 
     public function createCmsRelatedKey($key) {
         return self::getSettingsName() . "_" . $key;
+    }
+
+
+    /**
+     * Сохранение значения свойства в харнилища настроек конкретной CMS.
+     * @param string $key
+     * @throws Exception
+     */
+    public function saveConfig($key, $value)
+    {
+        $this->model_setting_setting->editSetting(ConfigStorageOpencart::getSettingsName(), array($key => $value));
     }
 }

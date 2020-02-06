@@ -26,9 +26,15 @@ class ConfigFormOpencart extends ConfigFormHtml
     private $orderStatuses;
 
     /**
+     * @var string
+     */
+    private $headingTitle;
+
+
+    /**
      * ConfigFieldsRenderOpencart constructor.
      */
-    public function __construct($managedFields, $registry)
+    public function __construct($managedFields, $registry, $headingTitle)
     {
         parent::__construct($managedFields);
         $this->addCmsManagedFields($registry);
@@ -38,7 +44,17 @@ class ConfigFormOpencart extends ConfigFormHtml
         foreach ($orderStatuses as $orderStatus) {
             $this->orderStatuses[] = new ListOption($orderStatus['order_status_id'], $orderStatus['name']);
         }
+        $this->headingTitle = $headingTitle;
     }
+
+    /**
+     * @return string
+     */
+    public function getHeadingTitle()
+    {
+        return $this->headingTitle;
+    }
+
 
     private function addCmsManagedFields($registry) {
         $language = $registry->get('language');

@@ -94,9 +94,9 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
     {
         switch (OpencartVersion::getVersion()) {
             case OpencartVersion::v2_3_x:
-                return $this->url->link('extension/payment/' . $this->extensionName . $action != null ? $action : "", 'token=' . $this->session->data['token'], 'SSL');
+                return $this->url->link('extension/payment/' . $this->extensionName . ($action != null ? '/' . $action : ""), 'token=' . $this->session->data['token'], 'SSL');
             case OpencartVersion::v3_x:
-                return $this->url->link('extension/payment/' . $this->extensionName . $action != null ? $action : "", 'user_token=' . $this->session->data['user_token'], true);
+                return $this->url->link('extension/payment/' . $this->extensionName . ($action != null ? '/' . $action : ""), 'user_token=' . $this->session->data['user_token'], true);
         }
     }
 

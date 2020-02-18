@@ -72,11 +72,19 @@ class ConfigStorageOpencart extends ConfigStorageCms
 
     /**
      * Сохранение значения свойства в харнилища настроек конкретной CMS.
+     *
      * @param string $key
      * @throws Exception
      */
     public function saveConfig($key, $value)
     {
-        $this->model_setting_setting->editSetting(ConfigStorageOpencart::getSettingsName(), array($key => $value));
+        /**
+         * в Opencart (2.3 точно) нет возможности одним методом создать или обновить одну настройку, т.к.:
+         * model_setting_setting->editSetting сперва делает делит всех настроек, а потом инсерт одной
+         * model_setting_setting->editSettingValue делает update и не подходит для случая первой инициализации
+        */
+        $currentSettings = $this->model_setting_setting->getSetting(ConfigStorageOpencart::getSettingsName());
+        $currentSettings[$key] = $value;
+        $this->model_setting_setting->editSetting(ConfigStorageOpencart::getSettingsName(), $currentSettings);
     }
 }

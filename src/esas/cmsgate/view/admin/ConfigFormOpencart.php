@@ -10,6 +10,7 @@
 namespace esas\cmsgate\view\admin;
 
 use esas\cmsgate\ConfigFields;
+use esas\cmsgate\Registry;
 use esas\cmsgate\utils\htmlbuilder\Attributes as attribute;
 use esas\cmsgate\utils\htmlbuilder\Elements as element;
 use esas\cmsgate\view\admin\fields\ConfigField;
@@ -25,39 +26,60 @@ class ConfigFormOpencart extends ConfigFormHtml
 {
     private $orderStatuses;
 
-    /**
-     * @var string
-     */
-    private $headingTitle;
-
+    private $registry;
 
     /**
      * ConfigFieldsRenderOpencart constructor.
      */
-    public function __construct($managedFields, $registry, $headingTitle)
+    public function __construct($managedFields, $headingTitle, $submitUrl, $submitButtons, $registry)
     {
-        parent::__construct($managedFields);
-        $this->addCmsManagedFields($registry);
+        parent::__construct($managedFields, $headingTitle, $submitUrl, $submitButtons);
+        $this->registry = $registry;
         $loader = $registry->get("load");
         $loader->model('localisation/order_status');
         $orderStatuses = $registry->get("model_localisation_order_status")->getOrderStatuses();
         foreach ($orderStatuses as $orderStatus) {
             $this->orderStatuses[] = new ListOption($orderStatus['order_status_id'], $orderStatus['name']);
         }
-        $this->headingTitle = $headingTitle;
     }
+
+    public function generate()
+    {
+        return element::div(
+            attribute::clazz("panel panel-default"),
+            element::div(
+                attribute::clazz("panel-heading"),
+                element::h1(
+                    attribute::clazz("panel-title"),
+                    element::i(
+                        attribute::clazz("fa fa-pencil")
+                    ),
+                    element::content(" " . $this->getHeadingTitle())
+                )
+            ),
+            element::div(
+                attribute::clazz("panel-body"),
+                element::form(
+                    attribute::action($this->getSubmitUrl()),
+                    attribute::method("post"),
+                    attribute::enctype("multipart/form-data"),
+                    attribute::id("config-form"),
+                    attribute::clazz("form-horizontal"),
+                    parent::generate(), // добавляем поля
+                    $this->elementSubmitButtons()
+                )
+            )
+        );
+    }
+
 
     /**
-     * @return string
+     * Надо вызывать отдельно от конструктора, т.к. если для модуля будет несколько групп настроек в разных ConfigForm
+     * возникает задвоение
      */
-    public function getHeadingTitle()
+    public function addCmsManagedFields()
     {
-        return $this->headingTitle;
-    }
-
-
-    private function addCmsManagedFields($registry) {
-        $language = $registry->get('language');
+        $language = $this->registry->get('language');
         $language->load('extension/payment/hutkigrosh');
 
         $this->managedFields->addField(new ConfigFieldNumber(
@@ -105,6 +127,61 @@ class ConfigFormOpencart extends ConfigFormHtml
             );
     }
 
+    private function elementMessages()
+    {
+        $ret = "";
+        if (Registry::getRegistry()->getMessenger()->getInfoMessages() != '') {
+            $ret .= $this->elementMessage("alert alert-success", Registry::getRegistry()->getMessenger()->getInfoMessages());
+        }
+        if (Registry::getRegistry()->getMessenger()->getWarnMessages() != '') {
+            $ret .= $this->elementMessage("alert alert-danger", Registry::getRegistry()->getMessenger()->getWarnMessages()); //todo поправить класс
+        }
+        if (Registry::getRegistry()->getMessenger()->getErrorMessages() != '') {
+            $ret .= $this->elementMessage("alert alert-danger", Registry::getRegistry()->getMessenger()->getErrorMessages());
+        }
+        return $ret;
+    }
+
+    private function elementMessage($class, $text)
+    {
+        return
+            element::div(
+                attribute::clazz($class),
+                element::i(
+                    attribute::clazz("fa fa-exclamation-circle")
+                ),
+                element::content($text),
+                element::button(
+                    attribute::type("button"),
+                    attribute::clazz("close"),
+                    attribute::data_dismiss("alert")
+                )
+            );
+    }
+
+    private function elementSubmitButtons()
+    {
+        $ret = "";
+        if (isset($this->submitButtons)) {
+            foreach ($this->submitButtons as $buttonName => $buttonValue) {
+                $ret .= self::elementInputSubmit($buttonName, $buttonValue) . "&nbsp;";
+            }
+        } else if (isset($this->submitUrl))
+            $ret = self::elementInputSubmit("submit_button", Registry::getRegistry()->getTranslator()->translate(AdminViewFields::CONFIG_FORM_BUTTON_SAVE));
+        return $ret;
+    }
+
+    private static function elementInputSubmit($name, $value)
+    {
+        return
+            element::input(
+                attribute::clazz("btn btn-primary"),
+                attribute::type("submit"),
+                attribute::name($name),
+                attribute::value($value)
+            );
+    }
+
     private static function attributeFormClass(ConfigField $configField)
     {
         return attribute::clazz("form-group" . ($configField->isRequired() ? ' required' : ''));
@@ -147,8 +224,8 @@ class ConfigFormOpencart extends ConfigFormHtml
         return
             element::div(
                 self::attributeFormClass($configField),
-                self::elementLabel($configField),
                 self::elementValidationError($configField),
+                self::elementLabel($configField),
                 element::div(
                     attribute::clazz("col-sm-10"),
                     element::textarea(
@@ -170,8 +247,8 @@ class ConfigFormOpencart extends ConfigFormHtml
         return
             element::div(
                 self::attributeFormClass($configField),
-                self::elementLabel($configField),
                 self::elementValidationError($configField),
+                self::elementLabel($configField),
                 element::div(
                     attribute::clazz("col-sm-10"),
                     self::elementInput($configField, "password")
@@ -185,8 +262,8 @@ class ConfigFormOpencart extends ConfigFormHtml
         return
             element::div(
                 self::attributeFormClass($configField),
-                self::elementLabel($configField),
                 self::elementValidationError($configField),
+                self::elementLabel($configField),
                 element::div(
                     attribute::clazz("col-sm-10"),
                     element::input(
@@ -207,8 +284,8 @@ class ConfigFormOpencart extends ConfigFormHtml
         return
             element::div(
                 self::attributeFormClass($configField),
-                self::elementLabel($configField),
                 self::elementValidationError($configField),
+                self::elementLabel($configField),
                 element::div(
                     attribute::clazz("col-sm-10"),
                     element::select(

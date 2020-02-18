@@ -3,6 +3,7 @@
 namespace esas\cmsgate\opencart;
 
 use esas\cmsgate\Registry as CmsgateRegistry;
+use esas\cmsgate\Registry;
 use esas\cmsgate\utils\Logger as CmsgateLogger;
 use esas\cmsgate\utils\OpencartVersion;
 use Exception;
@@ -31,9 +32,13 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
             $data['column_left'] = $this->load->controller('common/column_left');
             $data['footer'] = $this->load->controller('common/footer');
             $this->i18n($data, ['heading_title', 'text_status', 'text_enabled', 'text_disabled', 'text_save', 'text_cancel']);
-            $data['configForm'] = CmsgateRegistry::getRegistry()->getConfigForm();
-            $data['action'] = $this->linkExtensionSettings("savesettings");
-            $this->addExtraConfigForms();
+            $configForm = CmsgateRegistry::getRegistry()->getConfigForm();
+            $configForm->setSubmitUrl($this->linkExtensionSettings("savesettings")); //todo перенести в Registry
+            $data['configForm'] = $configForm;
+            $this->addExtraConfigForms($data);
+            $data["messages_info"] = Registry::getRegistry()->getMessenger()->getInfoMessages();
+            $data["messages_error"] = Registry::getRegistry()->getMessenger()->getErrorMessages();
+            $data["messages_warn"] = Registry::getRegistry()->getMessenger()->getWarnMessages();
             $this->response->setOutput($this->load->view($this->getView(), $data));
         } catch (Th $e) {
             CmsgateLogger::getLogger("ControllerExtensionPaymentHutkiGrosh")->error("Exception", $e);
@@ -45,7 +50,7 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
     /**
      * При необходимости отображения дополнительный групп настроек, этот метод должен быть переопределен
      */
-    public function addExtraConfigForms()
+    public function addExtraConfigForms(&$data)
     {
     }
 

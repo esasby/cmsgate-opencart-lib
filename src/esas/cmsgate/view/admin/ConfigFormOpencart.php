@@ -15,6 +15,7 @@ use esas\cmsgate\utils\htmlbuilder\Attributes as attribute;
 use esas\cmsgate\utils\htmlbuilder\Elements as element;
 use esas\cmsgate\view\admin\fields\ConfigField;
 use esas\cmsgate\view\admin\fields\ConfigFieldCheckbox;
+use esas\cmsgate\view\admin\fields\ConfigFieldFile;
 use esas\cmsgate\view\admin\fields\ConfigFieldList;
 use esas\cmsgate\view\admin\fields\ConfigFieldNumber;
 use esas\cmsgate\view\admin\fields\ConfigFieldPassword;
@@ -76,6 +77,7 @@ class ConfigFormOpencart extends ConfigFormHtml
     /**
      * Надо вызывать отдельно от конструктора, т.к. если для модуля будет несколько групп настроек в разных ConfigForm
      * возникает задвоение
+     * @return $this
      */
     public function addCmsManagedFields()
     {
@@ -97,9 +99,10 @@ class ConfigFormOpencart extends ConfigFormHtml
             true, [
             new ListOption("1", $language->get('module_status_enable')),
             new ListOption("0", $language->get('module_status_disable'))]));
+        return $this;
     }
 
-    private static function elementValidationError(ConfigField $configField)
+    public static function elementValidationError(ConfigField $configField)
     {
         $validationResult = $configField->getValidationResult();
         if ($validationResult != null && !$validationResult->isValid())
@@ -113,7 +116,7 @@ class ConfigFormOpencart extends ConfigFormHtml
     }
 
 
-    private static function elementLabel(ConfigField $configField)
+    public static function elementLabel(ConfigField $configField)
     {
         return
             element::label(
@@ -127,22 +130,28 @@ class ConfigFormOpencart extends ConfigFormHtml
             );
     }
 
-    private function elementMessages()
+    public static function elementMessages()
     {
         $ret = "";
-        if (Registry::getRegistry()->getMessenger()->getInfoMessages() != '') {
-            $ret .= $this->elementMessage("alert alert-success", Registry::getRegistry()->getMessenger()->getInfoMessages());
+        $messages = Registry::getRegistry()->getMessenger()->getInfoMessagesArray();
+        if (!empty($messages)) {
+            foreach ($messages as $message)
+                $ret .= self::elementMessage("alert alert-success", $message);
         }
-        if (Registry::getRegistry()->getMessenger()->getWarnMessages() != '') {
-            $ret .= $this->elementMessage("alert alert-danger", Registry::getRegistry()->getMessenger()->getWarnMessages()); //todo поправить класс
+        $messages = Registry::getRegistry()->getMessenger()->getWarnMessagesArray();
+        if (!empty($messages)) {
+            foreach ($messages as $message)
+                $ret .= self::elementMessage("alert alert-danger", $message); //todo поправить класс
         }
-        if (Registry::getRegistry()->getMessenger()->getErrorMessages() != '') {
-            $ret .= $this->elementMessage("alert alert-danger", Registry::getRegistry()->getMessenger()->getErrorMessages());
+        $messages = Registry::getRegistry()->getMessenger()->getErrorMessagesArray();
+        if (!empty($messages)) {
+            foreach ($messages as $message)
+                $ret .= self::elementMessage("alert alert-danger", $message);
         }
         return $ret;
     }
 
-    private function elementMessage($class, $text)
+    public static function elementMessage($class, $text)
     {
         return
             element::div(
@@ -278,6 +287,32 @@ class ConfigFormOpencart extends ConfigFormHtml
                 )
             );
     }
+
+    public function generateFileField(ConfigFieldFile $configField)
+    {
+        return
+            element::div(
+                self::attributeFormClass($configField),
+                self::elementValidationError($configField),
+                self::elementLabel($configField),
+                element::div(
+                    attribute::clazz("col-sm-10"),
+                    element::input(
+                        attribute::clazz("form-control"),
+                        attribute::name($configField->getKey()),
+                        attribute::type("file"),
+                        attribute::placeholder($configField->getName()),
+                        self::attributeInputId($configField)
+                    ),
+                    element::br(),
+                    element::font(
+                        attribute::color("green"),
+                        element::content($configField->getValue())
+                    )
+                )
+            );
+    }
+
 
     function generateListField(ConfigFieldList $configField)
     {

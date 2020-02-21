@@ -3,9 +3,9 @@
 namespace esas\cmsgate\opencart;
 
 use esas\cmsgate\Registry as CmsgateRegistry;
-use esas\cmsgate\Registry;
 use esas\cmsgate\utils\Logger as CmsgateLogger;
 use esas\cmsgate\utils\OpencartVersion;
+use esas\cmsgate\view\admin\ConfigFormOpencart;
 use Exception;
 use Throwable as Th;
 
@@ -36,14 +36,12 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
             $configForm->setSubmitUrl($this->linkExtensionSettings("savesettings")); //todo перенести в Registry
             $data['configForm'] = $configForm;
             $this->addExtraConfigForms($data);
-            $data["messages_info"] = Registry::getRegistry()->getMessenger()->getInfoMessages();
-            $data["messages_error"] = Registry::getRegistry()->getMessenger()->getErrorMessages();
-            $data["messages_warn"] = Registry::getRegistry()->getMessenger()->getWarnMessages();
+            $data["messages"] = ConfigFormOpencart::elementMessages();
             $this->response->setOutput($this->load->view($this->getView(), $data));
         } catch (Th $e) {
-            CmsgateLogger::getLogger("ControllerExtensionPaymentHutkiGrosh")->error("Exception", $e);
+            CmsgateLogger::getLogger("ShowSettings")->error("Exception", $e);
         } catch (Exception $e) { // для совместимости с php 5
-            CmsgateLogger::getLogger("ControllerExtensionPaymentHutkiGrosh")->error("Exception", $e);
+            CmsgateLogger::getLogger("ShowSettings")->error("Exception", $e);
         }
     }
 
@@ -56,14 +54,19 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
 
     public function savesettings()
     {
-        $configForm = CmsgateRegistry::getRegistry()->getConfigForm();
-        if (($this->request->server['REQUEST_METHOD'] == 'POST') && ($configForm->getManagedFields()->validateAll($this->request->post))) {
-            $this->load->model('setting/setting');
-            CmsgateRegistry::getRegistry()->getConfigWrapper()->saveConfigs($this->request->post);
-            $this->session->data['success'] = $this->language->get('text_success');
-            $this->response->redirect($this->linkExtensionsPayment());
-        } else
-            $this->showSettings();
+        try {
+            $configForm = CmsgateRegistry::getRegistry()->getConfigForm();
+            if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
+                $configForm->validate();
+                $this->load->model('setting/setting');
+                CmsgateRegistry::getRegistry()->getConfigWrapper()->saveConfigs($this->request->post);
+            }
+        } catch (Th $e) {
+            CmsgateLogger::getLogger("SaveSettings")->error("Exception", $e);
+        } catch (Exception $e) { // для совместимости с php 5
+            CmsgateLogger::getLogger("SaveSettings")->error("Exception", $e);
+        }
+        $this->showSettings();
     }
 
     protected function createBreadcrumbs()

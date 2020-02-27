@@ -2,6 +2,8 @@
 
 namespace esas\cmsgate\opencart;
 
+use bgpb\cmsgate\RegistryBGPBOpencart;
+
 class CatalogControllerExtensionPayment extends ControllerExtensionPayment
 {
     protected function addCommon(&$data) {
@@ -34,6 +36,6 @@ class CatalogControllerExtensionPayment extends ControllerExtensionPayment
     protected function failure($error)
     {
         $this->session->data['error'] = $error;
-        $this->response->redirect($this->url->link('checkout/cart', '', true));
+        $this->response->redirect(RegistryBGPBOpencart::getRegistry()->getSystemSettingsWrapper()->linkCatalogCheckout());
     }
 }

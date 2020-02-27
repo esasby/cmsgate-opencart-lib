@@ -10,8 +10,10 @@ namespace esas\cmsgate\wrappers;
 
 use Cart\Cart;
 use Cart\Currency;
+use esas\cmsgate\opencart\ModelExtensionPayment;
+use esas\cmsgate\utils\OpencartVersion;
 use ModelCheckoutOrder;
-use ModelExtensionPaymentHutkigrosh;
+use esas\cmsgate\Registry as CmsgateRegistry;
 use Registry;
 use Throwable;
 
@@ -25,9 +27,9 @@ class OrderWrapperOpencart extends OrderSafeWrapper
     private $model_checkout_order;
 
     /**
-     * @var ModelExtensionPaymentHutkigrosh
+     * @var ModelExtensionPayment
      */
-    private $model_extension_payment_hutkigrosh;
+    private $model_extension_payment;
 
     /**
      * @var Currency
@@ -48,8 +50,9 @@ class OrderWrapperOpencart extends OrderSafeWrapper
         $loader = $registry->get("load");
         $loader->model('checkout/order');
         $this->model_checkout_order = $registry->get('model_checkout_order');
-        $loader->model('extension/payment/hutkigrosh');
-        $this->model_extension_payment_hutkigrosh = $registry->get('model_extension_payment_hutkigrosh');
+//        $loader->model('extension/payment/' . CmsgateRegistry::getRegistry()->getPaySystemName());
+//        $this->model_extension_payment = $registry->get('model_extension_payment_'. CmsgateRegistry::getRegistry()->getPaySystemName());
+        $this->model_extension_payment = new ModelExtensionPayment($registry);
         $this->localOrderInfo = $this->model_checkout_order->getOrder($orderId);
         $this->currency = $registry->get("currency");
         $this->cart = $registry->get("cart");
@@ -152,7 +155,12 @@ class OrderWrapperOpencart extends OrderSafeWrapper
      */
     public function getExtIdUnsafe()
     {
-        return $this->localOrderInfo['payment_custom_field'];
+        switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v2_3_x:
+                return $this->localOrderInfo['payment_custom_field']['extOrderId'];
+            case OpencartVersion::v3_x:
+                return $this->localOrderInfo['payment_custom_field'];
+        }
     }
 
     /**
@@ -184,7 +192,17 @@ class OrderWrapperOpencart extends OrderSafeWrapper
      */
     public function saveExtId($billId)
     {
-        $this->model_extension_payment_hutkigrosh->saveBillId($this->getOrderId(), $billId);
+        $this->model_extension_payment->saveBillId($this->getOrderId(), $billId);
         $this->localOrderInfo['payment_custom_field'] = $billId;
+    }
+
+    /**
+     * Идентификатор клиента
+     * @throws Throwable
+     * @return string
+     */
+    public function getClientIdUnsafe()
+    {
+        return $this->localOrderInfo['customer_id'];
     }
 }

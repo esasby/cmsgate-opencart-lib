@@ -9,7 +9,7 @@
 
 namespace esas\cmsgate\view\admin;
 
-use esas\cmsgate\ConfigFields;
+use esas\cmsgate\ConfigFieldsOpencart;
 use esas\cmsgate\Registry;
 use esas\cmsgate\utils\htmlbuilder\Attributes as attribute;
 use esas\cmsgate\utils\htmlbuilder\Elements as element;
@@ -85,7 +85,7 @@ class ConfigFormOpencart extends ConfigFormHtml
         $language->load('extension/payment/hutkigrosh');
 
         $this->managedFields->addField(new ConfigFieldNumber(
-            ConfigFields::getCmsRelatedKey("sort_order"),
+            ConfigFieldsOpencart::sortOrder(),
             $language->get('module_sort_order_label'),
             $language->get('module_sort_order_description'),
             true,
@@ -93,7 +93,7 @@ class ConfigFormOpencart extends ConfigFormHtml
             1,
             20));
         $this->managedFields->addField(new ConfigFieldList(
-            ConfigFields::getCmsRelatedKey("status"),
+            ConfigFieldsOpencart::status(),
             $language->get('module_status_label'),
             $language->get('module_status_description'),
             true, [

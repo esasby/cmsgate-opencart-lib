@@ -24,5 +24,6 @@ class OpencartVersion
         }
 
     }
+    
 
 }

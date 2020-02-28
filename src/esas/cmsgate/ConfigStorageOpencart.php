@@ -86,5 +86,6 @@ class ConfigStorageOpencart extends ConfigStorageCms
         $currentSettings = $this->model_setting_setting->getSetting(ConfigStorageOpencart::getSettingsName());
         $currentSettings[$key] = $value;
         $this->model_setting_setting->editSetting(ConfigStorageOpencart::getSettingsName(), $currentSettings);
+        $this->config[$key] = $value;
     }
 }

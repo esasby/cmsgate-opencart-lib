@@ -9,25 +9,30 @@ class ModelExtensionPayment extends Model
 {
     public function saveBillId($orderId, $billId)
     {
-        switch (OpencartVersion::getVersion()) {
-            case OpencartVersion::v3_x:
-                $sql = 'UPDATE
-                        `' . DB_PREFIX . 'order`    
-                    SET
-                   	    payment_custom_field = "' . $billId . '"
-                    WHERE
-                        order_id = \'' . (int)$orderId . '\'';
-                break;
-            case OpencartVersion::v2_3_x:
-                $sql = 'UPDATE
+//        switch (OpencartVersion::getVersion()) {
+//            case OpencartVersion::v3_x:
+//                $sql = 'UPDATE
+//                        `' . DB_PREFIX . 'order`
+//                    SET
+//                   	    payment_custom_field = "' . $billId . '"
+//                    WHERE
+//                        order_id = \'' . (int)$orderId . '\'';
+//                break;
+//            case OpencartVersion::v2_3_x:
+//                $sql = 'UPDATE
+//                        ' . DB_PREFIX . 'order
+//                    SET
+//                   	    payment_custom_field = "' . $this->db->escape(isset($billId) ? json_encode(array("extOrderId" => $billId)) : '') . '"
+//                    WHERE
+//                        order_id = \'' . (int)$orderId . '\'';
+//                break;
+//        }
+        $sql = 'UPDATE
                         ' . DB_PREFIX . 'order     
                     SET
                    	    payment_custom_field = "' . $this->db->escape(isset($billId) ? json_encode(array("extOrderId" => $billId)) : '') . '"
                     WHERE
                         order_id = \'' . (int)$orderId . '\'';
-                break;
-        }
-
 
         $this->db->query($sql);
     }

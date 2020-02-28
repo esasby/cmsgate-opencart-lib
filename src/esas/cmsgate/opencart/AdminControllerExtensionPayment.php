@@ -5,7 +5,7 @@ namespace esas\cmsgate\opencart;
 use bgpb\cmsgate\RegistryBGPBOpencart;
 use esas\cmsgate\Registry as CmsgateRegistry;
 use esas\cmsgate\utils\Logger as CmsgateLogger;
-use esas\cmsgate\view\admin\ConfigFormOpencart;
+use esas\cmsgate\view\ElementsOpencart;
 use Exception;
 use Throwable as Th;
 
@@ -35,7 +35,7 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
             $configForm = RegistryBGPBOpencart::getRegistry()->getConfigForm();
             $data['configForm'] = $configForm;
             $this->addExtraConfigForms($data);
-            $data["messages"] = ConfigFormOpencart::elementMessages();
+            $data["messages"] = ElementsOpencart::elementMessages();
             $this->response->setOutput($this->load->view($this->getView(), $data));
         } catch (Th $e) {
             CmsgateLogger::getLogger("ShowSettings")->error("Exception", $e);
@@ -58,8 +58,7 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
                 $configForm = CmsgateRegistry::getRegistry()->getConfigForm();
             if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
                 $configForm->validate();
-                $this->load->model('setting/setting');
-                CmsgateRegistry::getRegistry()->getConfigWrapper()->saveConfigs($this->request->post);
+                $configForm->save();
             }
         } catch (Th $e) {
             CmsgateLogger::getLogger("SaveSettings")->error("Exception", $e);

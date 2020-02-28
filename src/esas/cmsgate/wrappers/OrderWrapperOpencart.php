@@ -155,12 +155,13 @@ class OrderWrapperOpencart extends OrderSafeWrapper
      */
     public function getExtIdUnsafe()
     {
-        switch (OpencartVersion::getVersion()) {
-            case OpencartVersion::v2_3_x:
-                return $this->localOrderInfo['payment_custom_field']['extOrderId'];
-            case OpencartVersion::v3_x:
-                return $this->localOrderInfo['payment_custom_field'];
-        }
+        return $this->localOrderInfo['payment_custom_field']['extOrderId'];
+//        switch (OpencartVersion::getVersion()) {
+//            case OpencartVersion::v2_3_x:
+//                return $this->localOrderInfo['payment_custom_field']['extOrderId'];
+//            case OpencartVersion::v3_x:
+//                return $this->localOrderInfo['payment_custom_field'];
+//        }
     }
 
     /**

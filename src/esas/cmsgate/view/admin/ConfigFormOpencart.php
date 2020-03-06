@@ -10,7 +10,6 @@
 namespace esas\cmsgate\view\admin;
 
 use esas\cmsgate\ConfigFieldsOpencart;
-use esas\cmsgate\Registry;
 use esas\cmsgate\utils\htmlbuilder\Attributes as attribute;
 use esas\cmsgate\utils\htmlbuilder\Elements as element;
 use esas\cmsgate\view\admin\fields\ConfigField;
@@ -32,9 +31,9 @@ class ConfigFormOpencart extends ConfigFormHtml
     /**
      * ConfigFieldsRenderOpencart constructor.
      */
-    public function __construct($managedFields, $headingTitle, $submitUrl, $submitButtons, $registry)
+    public function __construct($managedFields, $formKey, $submitUrl, $submitButtons, $registry)
     {
-        parent::__construct($managedFields, $headingTitle, $submitUrl, $submitButtons);
+        parent::__construct($managedFields, $formKey, $submitUrl, $submitButtons);
         $this->registry = $registry;
         $loader = $registry->get("load");
         $loader->model('localisation/order_status');
@@ -130,19 +129,7 @@ class ConfigFormOpencart extends ConfigFormHtml
             );
     }
 
-    private function elementSubmitButtons()
-    {
-        $ret = "";
-        if (isset($this->submitButtons)) {
-            foreach ($this->submitButtons as $buttonName => $buttonValue) {
-                $ret .= self::elementInputSubmit($buttonName, $buttonValue) . "&nbsp;";
-            }
-        } else if (isset($this->submitUrl))
-            $ret = self::elementInputSubmit("submit_button", Registry::getRegistry()->getTranslator()->translate(AdminViewFields::CONFIG_FORM_BUTTON_SAVE));
-        return $ret;
-    }
-
-    private static function elementInputSubmit($name, $value)
+    protected function elementInputSubmit($name, $value)
     {
         return
             element::input(

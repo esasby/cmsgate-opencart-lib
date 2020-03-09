@@ -23,6 +23,17 @@ class ViewBuilderOpencart extends ViewBuilder
             );
 
     }
+
+    public static function elementClientMessages()
+    {
+        return
+            parent::elementMessages(
+                "alert alert-success",
+                "alert alert-danger",
+                "alert alert-danger"
+            );
+
+    }
     
     public static function elementMessage($class, $text)
     {

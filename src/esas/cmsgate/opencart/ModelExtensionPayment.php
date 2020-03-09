@@ -2,7 +2,6 @@
 namespace esas\cmsgate\opencart;
 
 use esas\cmsgate\Registry;
-use esas\cmsgate\utils\OpencartVersion;
 use Model;
 
 class ModelExtensionPayment extends Model

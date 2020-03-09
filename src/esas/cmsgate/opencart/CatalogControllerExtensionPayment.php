@@ -2,11 +2,11 @@
 
 namespace esas\cmsgate\opencart;
 
+use bgpb\cmsgate\messenger\MessagesBGPB;
 use bgpb\cmsgate\RegistryBGPBOpencart;
 use esas\cmsgate\Registry;
 use esas\cmsgate\utils\htmlbuilder\Attributes as attribute;
 use esas\cmsgate\utils\htmlbuilder\Elements as element;
-use esas\cmsgate\view\Messages;
 use esas\cmsgate\view\ViewUtils;
 
 class CatalogControllerExtensionPayment extends ControllerExtensionPayment
@@ -51,7 +51,7 @@ class CatalogControllerExtensionPayment extends ControllerExtensionPayment
             return
                 element::div(
                     attribute::clazz("alert alert-info"),
-                    element::content(Registry::getRegistry()->getTranslator()->translate(Messages::SANDBOX_MODE_IS_ON))
+                    element::content(Registry::getRegistry()->getTranslator()->translate(MessagesBGPB::SANDBOX_MODE_IS_ON))
                 );
         } else
             return "";

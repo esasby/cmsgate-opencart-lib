@@ -25,6 +25,7 @@ class SystemSettingsWrapperOpencart extends SystemSettingsWrapper
      */
     public function __construct($registry)
     {
+        parent::__construct();
         $this->opencartRegistry = $registry;
         $this->url = $this->opencartRegistry->get("url");
         $this->session = $registry->get('session');

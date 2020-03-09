@@ -11,9 +11,7 @@ namespace esas\cmsgate\wrappers;
 use Cart\Cart;
 use Cart\Currency;
 use esas\cmsgate\opencart\ModelExtensionPayment;
-use esas\cmsgate\utils\OpencartVersion;
 use ModelCheckoutOrder;
-use esas\cmsgate\Registry as CmsgateRegistry;
 use Registry;
 use Throwable;
 

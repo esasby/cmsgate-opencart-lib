@@ -8,7 +8,6 @@
 
 namespace esas\cmsgate\wrappers;
 
-use Cart\Currency;
 use Throwable;
 
 class OrderProductWrapperOpencart extends OrderProductSafeWrapper

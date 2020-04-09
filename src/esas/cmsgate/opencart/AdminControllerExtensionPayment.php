@@ -2,10 +2,11 @@
 
 namespace esas\cmsgate\opencart;
 
-use bgpb\cmsgate\RegistryBGPBOpencart;
 use esas\cmsgate\Registry as CmsgateRegistry;
+use esas\cmsgate\Registry;
 use esas\cmsgate\utils\Logger as CmsgateLogger;
 use esas\cmsgate\view\ViewBuilderOpencart;
+use esas\cmsgate\wrappers\SystemSettingsWrapperOpencart;
 use Exception;
 use Throwable as Th;
 
@@ -27,12 +28,12 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
             $this->document->setTitle($this->language->get('heading_title'));
             $data['heading_title'] = $this->language->get('heading_title');// Генерация хлебных крошек
             $data['breadcrumbs'] = $this->createBreadcrumbs();
-            $data['cancel'] = RegistryBGPBOpencart::getRegistry()->getSystemSettingsWrapper()->linkAdminExtensionsPayment();
+            $data['cancel'] = SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensionsPayment();
             $data['header'] = $this->load->controller('common/header');
             $data['column_left'] = $this->load->controller('common/column_left');
             $data['footer'] = $this->load->controller('common/footer');
             $this->i18n($data, ['heading_title', 'text_status', 'text_enabled', 'text_disabled', 'text_save', 'text_cancel']);
-            $configForm = RegistryBGPBOpencart::getRegistry()->getConfigForm();
+            $configForm = Registry::getRegistry()->getConfigForm();
             $data['configForm'] = $configForm;
             $this->addExtraConfigForms($data);
             $data["messages"] = ViewBuilderOpencart::elementAdminMessages();
@@ -72,16 +73,16 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
     {
         $breadcrumbs[] = array(
             'text' => $this->language->get('text_home'),
-            'href' => RegistryBGPBOpencart::getRegistry()->getSystemSettingsWrapper()->linkAdminHome(),
+            'href' => SystemSettingsWrapperOpencart::getInstance()->linkAdminHome(),
             'separator' => false
         );
         $breadcrumbs[] = array(
             'text' => $this->language->get('text_extension'),
-            'href' => RegistryBGPBOpencart::getRegistry()->getSystemSettingsWrapper()->linkAdminExtensionsPayment(),
+            'href' => SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensionsPayment(),
         );
         $breadcrumbs[] = array(
             'text' => $this->language->get('heading_title'),
-            'href' => RegistryBGPBOpencart::getRegistry()->getSystemSettingsWrapper()->linkAdminExtensionSettings(),
+            'href' => SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensionSettings(),
             'separator' => ' :: '
         );// Кнопки
         return $breadcrumbs;

@@ -32,7 +32,8 @@ class ConfigStorageOpencart extends ConfigStorageCms
         $this->config = $this->model_setting_setting->getSetting(self::getSettingsName());
     }
 
-    public static function getSettingsName() {
+    public static function getSettingsName()
+    {
         switch (OpencartVersion::getVersion()) {
             case OpencartVersion::v2_3_x:
                 return Registry::getRegistry()->getPaySystemName();
@@ -65,7 +66,8 @@ class ConfigStorageOpencart extends ConfigStorageCms
         return $cmsConfigValue; //уже boolean
     }
 
-    public function createCmsRelatedKey($key) {
+    public function createCmsRelatedKey($key)
+    {
         return self::getSettingsName() . "_" . $key;
     }
 
@@ -82,7 +84,7 @@ class ConfigStorageOpencart extends ConfigStorageCms
          * в Opencart (2.3 точно) нет возможности одним методом создать или обновить одну настройку, т.к.:
          * model_setting_setting->editSetting сперва делает делит всех настроек, а потом инсерт одной
          * model_setting_setting->editSettingValue делает update и не подходит для случая первой инициализации
-        */
+         */
         $currentSettings = $this->model_setting_setting->getSetting(ConfigStorageOpencart::getSettingsName());
         $currentSettings[$key] = $value;
         $this->model_setting_setting->editSetting(ConfigStorageOpencart::getSettingsName(), $currentSettings);

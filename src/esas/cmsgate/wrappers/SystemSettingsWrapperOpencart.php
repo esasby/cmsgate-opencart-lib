@@ -20,7 +20,6 @@ class SystemSettingsWrapperOpencart extends SystemSettingsWrapper
     private $extensionName;
 
     /**
-     * SystemSettingsWrapperBGPBOpencart constructor.
      * @param $registry
      */
     public function __construct($registry)
@@ -30,6 +29,19 @@ class SystemSettingsWrapperOpencart extends SystemSettingsWrapper
         $this->url = $this->opencartRegistry->get("url");
         $this->session = $registry->get('session');
         $this->extensionName = Registry::getRegistry()->getPaySystemName();
+    }
+
+    /**
+     * Для удобства работы в IDE и подсветки синтаксиса.
+     * @return $this
+     */
+    public static function getInstance() {
+        return Registry::getRegistry()->getSystemSettingsWrapper();
+    }
+
+    public function getOpencartRegistry()
+    {
+        return $this->opencartRegistry;
     }
 
     public function linkAdminHome()

@@ -154,7 +154,9 @@ class OrderWrapperOpencart extends OrderSafeWrapper
      */
     public function getExtIdUnsafe()
     {
-        return $this->localOrderInfo['payment_custom_field']['extOrderId'];
+        if (array_key_exists('payment_custom_field', $this->localOrderInfo) && array_key_exists('extOrderId', $this->localOrderInfo['payment_custom_field']))
+            return $this->localOrderInfo['payment_custom_field']['extOrderId'];
+        return '';
 //        switch (OpencartVersion::getVersion()) {
 //            case OpencartVersion::v2_3_x:
 //                return $this->localOrderInfo['payment_custom_field']['extOrderId'];

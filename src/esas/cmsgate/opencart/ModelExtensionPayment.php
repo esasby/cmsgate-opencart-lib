@@ -60,7 +60,7 @@ class ModelExtensionPayment extends Model
             return array(
                 'code' => $moduleName,
                 'title' => Registry::getRegistry()->getConfigWrapper()->getPaymentMethodName(),
-                'terms' => '',
+                'terms' => Registry::getRegistry()->getConfigWrapper()->getPaymentMethodDetails(),
                 'sort_order' => $this->config->get($moduleName . "_sort_order")
             );
         } else {

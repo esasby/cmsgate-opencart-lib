@@ -54,6 +54,16 @@ class SystemSettingsWrapperOpencart extends SystemSettingsWrapper
         }
     }
 
+    public function linkAdminExtensions()
+    {
+        switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v2_3_x:
+                return $this->url->link('extension/extension', 'token=' . $this->session->data['token'], 'SSL');
+            case OpencartVersion::v3_x:
+                return $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'], true);
+        }
+    }
+
     public function linkAdminExtensionsPayment()
     {
         switch (OpencartVersion::getVersion()) {

@@ -88,8 +88,6 @@ abstract class CatalogControllerExtensionPayment extends ControllerExtensionPaym
         );
     }
 
-
-
     protected function failure($error)
     {
         $this->session->data['error'] = $error;

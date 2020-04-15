@@ -10,6 +10,7 @@
 namespace esas\cmsgate\view\admin;
 
 use esas\cmsgate\ConfigFieldsOpencart;
+use esas\cmsgate\Registry;
 use esas\cmsgate\utils\htmlbuilder\Attributes as attribute;
 use esas\cmsgate\utils\htmlbuilder\Elements as element;
 use esas\cmsgate\view\admin\fields\ConfigField;
@@ -80,24 +81,21 @@ class ConfigFormOpencart extends ConfigFormHtml
      */
     public function addCmsManagedFields()
     {
-        $language = $this->registry->get('language');
-        $language->load('extension/payment/hutkigrosh');
-
-        $this->managedFields->addField(new ConfigFieldNumber(
+                $this->managedFields->addField(new ConfigFieldNumber(
             ConfigFieldsOpencart::sortOrder(),
-            $language->get('module_sort_order_label'),
-            $language->get('module_sort_order_description'),
+            Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::MODULE_SORT_ORDER_LABEL),
+            Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::MODULE_SORT_ORDER_DESCRIPTION),
             true,
             new ValidatorInteger(1, 20),
             1,
             20));
         $this->managedFields->addField(new ConfigFieldList(
             ConfigFieldsOpencart::status(),
-            $language->get('module_status_label'),
-            $language->get('module_status_description'),
+            Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::MODULE_STATUS_LABEL),
+            Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::MODULE_STATUS_DESCRIPTION),
             true, [
-            new ListOption("1", $language->get('module_status_enable')),
-            new ListOption("0", $language->get('module_status_disable'))]));
+            new ListOption("1", Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::MODULE_STATUS_ENABLE)),
+            new ListOption("0", Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::MODULE_STATUS_DISABLE))]));
         return $this;
     }
 

@@ -5,6 +5,7 @@ namespace esas\cmsgate\opencart;
 use esas\cmsgate\Registry as CmsgateRegistry;
 use esas\cmsgate\Registry;
 use esas\cmsgate\utils\Logger as CmsgateLogger;
+use esas\cmsgate\view\admin\AdminViewFieldsOpencart;
 use esas\cmsgate\view\ViewBuilderOpencart;
 use esas\cmsgate\wrappers\SystemSettingsWrapperOpencart;
 use Exception;
@@ -26,13 +27,12 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
         try {
             $this->load->language('extension/payment/' . $this->extensionName);
             $this->document->setTitle($this->language->get('heading_title'));
-            $data['heading_title'] = $this->language->get('heading_title');// Генерация хлебных крошек
+            $data['heading_title'] = Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::ADMIN_PAYMENT_METHOD_NAME);
             $data['breadcrumbs'] = $this->createBreadcrumbs();
             $data['cancel'] = SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensionsPayment();
             $data['header'] = $this->load->controller('common/header');
             $data['column_left'] = $this->load->controller('common/column_left');
             $data['footer'] = $this->load->controller('common/footer');
-            $this->i18n($data, ['heading_title', 'text_status', 'text_enabled', 'text_disabled', 'text_save', 'text_cancel']);
             $configForm = Registry::getRegistry()->getConfigForm();
             $data['configForm'] = $configForm;
             $this->addExtraConfigForms($data);
@@ -72,19 +72,25 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
     protected function createBreadcrumbs()
     {
         $breadcrumbs[] = array(
-            'text' => $this->language->get('text_home'),
+            'text' => Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::BREADCRUMBS_MAIN),
             'href' => SystemSettingsWrapperOpencart::getInstance()->linkAdminHome(),
             'separator' => false
         );
         $breadcrumbs[] = array(
-            'text' => $this->language->get('text_extension'),
+            'text' => Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::BREADCRUMBS_EXTENSIONS),
+            'href' => SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensions(),
+        );
+        $breadcrumbs[] = array(
+            'text' => Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::BREADCRUMBS_EXTENSIONS_PAYMENTS),
             'href' => SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensionsPayment(),
         );
         $breadcrumbs[] = array(
-            'text' => $this->language->get('heading_title'),
+            'text' => Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::ADMIN_PAYMENT_METHOD_NAME),
             'href' => SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensionSettings(),
             'separator' => ' :: '
         );// Кнопки
+
         return $breadcrumbs;
     }
+
 }

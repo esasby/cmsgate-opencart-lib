@@ -8,6 +8,7 @@
 
 namespace esas\cmsgate\view;
 
+use esas\cmsgate\messenger\Messages;
 use esas\cmsgate\Registry;
 use esas\cmsgate\utils\htmlbuilder\Attributes as attribute;
 use esas\cmsgate\utils\htmlbuilder\Elements as element;
@@ -84,5 +85,34 @@ class ViewBuilderOpencart extends ViewBuilder
                     )
                 )
             );
+    }
+
+    /**
+     * Для добавления информационной надписи о режими "sandbox"
+     * @return string
+     */
+    public static function elementSandboxMessage()
+    {
+        if (Registry::getRegistry()->getConfigWrapper()->isSandbox()) {
+            return
+                element::div(
+                    attribute::clazz("alert alert-info"),
+                    element::content(Registry::getRegistry()->getTranslator()->translate(Messages::SANDBOX_MODE_IS_ON))
+                );
+        } else
+            return "";
+    }
+
+    /**
+     * Для добавления кнопик "Продолжить" на последнем экране
+     * @return string
+     */
+    public static function elementButtonContinue($link, $label)
+    {
+        return element::a(
+            attribute::href($link),
+            attribute::clazz("btn btn-primary"),
+            element::content($label)
+        );
     }
 }

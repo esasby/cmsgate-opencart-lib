@@ -2,13 +2,12 @@
 
 namespace esas\cmsgate\opencart;
 
-use esas\cmsgate\messenger\Messages;
 use esas\cmsgate\Registry;
 use esas\cmsgate\utils\CMSGateException;
-use esas\cmsgate\utils\htmlbuilder\Attributes as attribute;
-use esas\cmsgate\utils\htmlbuilder\Elements as element;
 use esas\cmsgate\utils\Logger;
+use esas\cmsgate\view\client\ClientViewFieldsOpencart;
 use esas\cmsgate\view\ViewBuilderOpencart;
+use esas\cmsgate\view\ViewFields;
 use esas\cmsgate\view\ViewUtils;
 use esas\cmsgate\wrappers\SystemSettingsWrapperOpencart;
 use Exception;
@@ -42,7 +41,7 @@ abstract class CatalogControllerExtensionPayment extends ControllerExtensionPaym
     }
 
     protected function addCommonIndexData(&$data) {
-        $data['sandboxMessage'] = $this->elementSandboxMessage();
+        $data['sandboxMessage'] = ViewBuilderOpencart::elementSandboxMessage();
         $data['messages'] = ViewBuilderOpencart::elementClientMessages();
     }
 
@@ -64,39 +63,32 @@ abstract class CatalogControllerExtensionPayment extends ControllerExtensionPaym
         $data['header'] = $this->load->controller('common/header');
     }
 
+    protected function addCheckoutContinueButton(&$data)
+    {
+        $data['buttonContinue'] = ViewBuilderOpencart::elementButtonContinue(
+            SystemSettingsWrapperOpencart::getInstance()->linkCatalogCheckoutSuccess(),
+            Registry::getRegistry()->getTranslator()->translate(ViewFields::BUTTON_CONTINUE));
+    }
+
     protected function createBreadcrumbs()
     {
         $breadcrumbs = array();
-        $breadcrumbs[] = $this->createBreadcrumb('text_home', 'common/home');
-        $breadcrumbs[] = $this->createBreadcrumb('text_basket', 'checkout/cart');
-        $breadcrumbs[] = $this->createBreadcrumb('text_checkout', 'checkout/checkout');
-        $breadcrumbs[] = $this->createBreadcrumb('text_success', 'checkout/success');
+        $breadcrumbs[] = $this->createBreadcrumb(ClientViewFieldsOpencart::BREADCRUMBS_HOME, 'common/home');
+        $breadcrumbs[] = $this->createBreadcrumb(ClientViewFieldsOpencart::BREADCRUMBS_BASKET, 'checkout/cart');
+        $breadcrumbs[] = $this->createBreadcrumb(ClientViewFieldsOpencart::BREADCRUMBS_CHECKOUT, 'checkout/checkout');
+        $breadcrumbs[] = $this->createBreadcrumb(ClientViewFieldsOpencart::BREADCRUMBS_SUCCESS, 'checkout/success');
         return $breadcrumbs;
     }
 
     private function createBreadcrumb($text, $link)
     {
         return array(
-            'text' => $this->language->get($text),
+            'text' => Registry::getRegistry()->getTranslator()->translate($text),
             'href' => $this->url->link($link)
         );
     }
 
-    /**
-     * Для добавления информационной надписи о режими "sandbox"
-     * @return string
-     */
-    protected function elementSandboxMessage()
-    {
-        if (Registry::getRegistry()->getConfigWrapper()->isSandbox()) {
-            return
-                element::div(
-                    attribute::clazz("alert alert-info"),
-                    element::content(Registry::getRegistry()->getTranslator()->translate(Messages::SANDBOX_MODE_IS_ON))
-                );
-        } else
-            return "";
-    }
+
 
     protected function failure($error)
     {

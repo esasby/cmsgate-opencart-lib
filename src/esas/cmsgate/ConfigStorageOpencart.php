@@ -63,7 +63,7 @@ class ConfigStorageOpencart extends ConfigStorageCms
      */
     public function convertToBoolean($cmsConfigValue)
     {
-        return $cmsConfigValue; //уже boolean
+        return ('1' == $cmsConfigValue || 'true' == $cmsConfigValue) ? true : false; //уже boolean
     }
 
     public function createCmsRelatedKey($key)

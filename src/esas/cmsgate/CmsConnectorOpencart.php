@@ -11,8 +11,8 @@ namespace esas\cmsgate;
 
 use esas\cmsgate\lang\LocaleLoaderOpencart;
 use esas\cmsgate\opencart\ModelExtensionPayment;
-use esas\cmsgate\utils\RequestParams;
 use esas\cmsgate\view\admin\AdminViewFields;
+use esas\cmsgate\view\admin\AdminViewFieldsOpencart;
 use esas\cmsgate\view\admin\ConfigFormOpencart;
 use esas\cmsgate\wrappers\OrderWrapper;
 use esas\cmsgate\wrappers\OrderWrapperOpencart;
@@ -46,10 +46,12 @@ class CmsConnectorOpencart extends CmsConnector
         $configForm  = new ConfigFormOpencart(
             $managedFields,
             AdminViewFields::CONFIG_FORM_COMMON,
-            SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensionSettings("savesettings"),
+            SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensionSettings("commonConfigFormAction"),
             null,
             $this->opencartRegistry);
-        $configForm->addSubmitButton(RequestParams::SAVE_BUTTON);
+        $configForm->addSubmitButton(AdminViewFields::CONFIG_FORM_BUTTON_SAVE);
+        $configForm->addSubmitButton(AdminViewFields::CONFIG_FORM_BUTTON_DOWNLOAD_LOG);
+        $configForm->addSubmitButton(AdminViewFields::CONFIG_FORM_BUTTON_CANCEL);
 //        $configForm->addSubmitButton(RequestParams::SAVE_AND_EXIT_BUTTON);
         $configForm->addCmsManagedFields();
         return $configForm;

@@ -2,9 +2,11 @@
 
 namespace esas\cmsgate\opencart;
 
-use esas\cmsgate\Registry as CmsgateRegistry;
 use esas\cmsgate\Registry;
+use esas\cmsgate\Registry as CmsgateRegistry;
+use esas\cmsgate\utils\FileUtils;
 use esas\cmsgate\utils\Logger as CmsgateLogger;
+use esas\cmsgate\utils\Logger;
 use esas\cmsgate\view\admin\AdminViewFieldsOpencart;
 use esas\cmsgate\view\ViewBuilderOpencart;
 use esas\cmsgate\wrappers\SystemSettingsWrapperOpencart;
@@ -50,6 +52,24 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
      */
     public function addExtraConfigForms(&$data)
     {
+    }
+
+    public function commonConfigFormAction()
+    {
+        try {
+            if (isset($this->request->post[AdminViewFieldsOpencart::CONFIG_FORM_BUTTON_DOWNLOAD_LOG])) {
+                FileUtils::downloadByPath(Logger::getLogFilePath());
+            } else if (isset($this->request->post[AdminViewFieldsOpencart::CONFIG_FORM_BUTTON_CANCEL])) {
+                $this->response->redirect(SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensionsPayment());
+            } else {
+                $this->savesettings(CmsgateRegistry::getRegistry()->getConfigForm());
+            }
+        } catch (Th $e) {
+            CmsgateLogger::getLogger("SaveSettings")->error("Exception", $e);
+        } catch (Exception $e) { // для совместимости с php 5
+            CmsgateLogger::getLogger("SaveSettings")->error("Exception", $e);
+        }
+        $this->showSettings();
     }
 
     public function savesettings($configForm = null)

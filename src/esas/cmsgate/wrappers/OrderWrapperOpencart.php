@@ -116,8 +116,8 @@ class OrderWrapperOpencart extends OrderSafeWrapper
      */
     public function getAmountUnsafe()
     {
-        return $this->localOrderInfo['total']; // check
-//        return $this->formatAmount($this->localOrderInfo['total']);
+//        return $this->localOrderInfo['total']; // check
+        return $this->formatAmount($this->localOrderInfo['total']);
     }
 
     /**

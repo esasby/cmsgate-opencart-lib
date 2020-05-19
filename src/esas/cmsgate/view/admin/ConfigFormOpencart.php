@@ -13,6 +13,7 @@ use esas\cmsgate\ConfigFieldsOpencart;
 use esas\cmsgate\Registry;
 use esas\cmsgate\utils\htmlbuilder\Attributes as attribute;
 use esas\cmsgate\utils\htmlbuilder\Elements as element;
+use esas\cmsgate\utils\UploadedFileWrapper;
 use esas\cmsgate\view\admin\fields\ConfigField;
 use esas\cmsgate\view\admin\fields\ConfigFieldCheckbox;
 use esas\cmsgate\view\admin\fields\ConfigFieldFile;
@@ -253,11 +254,16 @@ class ConfigFormOpencart extends ConfigFormHtml
                     ),
                     element::br(),
                     element::font(
-                        attribute::color("green"),
+                        attribute::color($this->getFileColor($configField->getValue())),
                         element::content($configField->getValue())
                     )
                 )
             );
+    }
+
+    private function getFileColor($fileName) {
+        $file = new UploadedFileWrapper($fileName);
+        return $file->isExists() ? "green" : "red";
     }
 
 

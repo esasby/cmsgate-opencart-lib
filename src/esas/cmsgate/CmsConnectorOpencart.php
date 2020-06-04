@@ -9,10 +9,12 @@
 namespace esas\cmsgate;
 
 
+use esas\cmsgate\descriptors\CmsConnectorDescriptor;
+use esas\cmsgate\descriptors\VendorDescriptor;
+use esas\cmsgate\descriptors\VersionDescriptor;
 use esas\cmsgate\lang\LocaleLoaderOpencart;
 use esas\cmsgate\opencart\ModelExtensionPayment;
 use esas\cmsgate\view\admin\AdminViewFields;
-use esas\cmsgate\view\admin\AdminViewFieldsOpencart;
 use esas\cmsgate\view\admin\ConfigFormOpencart;
 use esas\cmsgate\wrappers\OrderWrapper;
 use esas\cmsgate\wrappers\OrderWrapperOpencart;
@@ -105,5 +107,20 @@ class CmsConnectorOpencart extends CmsConnector
     public function createLocaleLoader()
     {
         return new LocaleLoaderOpencart($this->opencartRegistry);
+    }
+
+    public function createCmsConnectorDescriptor()
+    {
+        return new CmsConnectorDescriptor(
+            "cmsgate-opencart-lib",
+            new VersionDescriptor(
+                "v1.10.0",
+                "2020-06-03"
+            ),
+            "Cmsgate Opencart connector",
+            "https://bitbucket.esas.by/projects/CG/repos/cmsgate-opencart-lib/browse",
+            VendorDescriptor::esas(),
+            "opencart"
+        );
     }
 }

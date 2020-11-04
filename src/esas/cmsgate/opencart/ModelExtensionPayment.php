@@ -1,6 +1,7 @@
 <?php
 namespace esas\cmsgate\opencart;
 
+use esas\cmsgate\ConfigFieldsOpencart;
 use esas\cmsgate\Registry;
 use Model;
 
@@ -61,7 +62,7 @@ class ModelExtensionPayment extends Model
                 'code' => $moduleName,
                 'title' => Registry::getRegistry()->getConfigWrapper()->getPaymentMethodName(),
                 'terms' => Registry::getRegistry()->getConfigWrapper()->getPaymentMethodDetails(),
-                'sort_order' => $this->config->get($moduleName . "_sort_order")
+                'sort_order' => $this->config->get(ConfigFieldsOpencart::sortOrder())
             );
         } else {
             return array();

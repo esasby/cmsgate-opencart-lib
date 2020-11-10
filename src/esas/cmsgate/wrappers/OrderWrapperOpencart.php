@@ -12,6 +12,7 @@ use Cart\Cart;
 use Cart\Currency;
 use esas\cmsgate\opencart\ModelExtensionPayment;
 use ModelCheckoutOrder;
+use ModelExtensionTotalShipping;
 use Registry;
 use Throwable;
 
@@ -28,6 +29,11 @@ class OrderWrapperOpencart extends OrderSafeWrapper
      * @var ModelExtensionPayment
      */
     private $model_extension_payment;
+
+    /**
+     * @var ModelExtensionTotalShipping
+     */
+    private $model_extension_total_shipping;
 
     /**
      * @var Currency
@@ -54,6 +60,9 @@ class OrderWrapperOpencart extends OrderSafeWrapper
         $this->localOrderInfo = $this->model_checkout_order->getOrder($orderId);
         $this->currency = $registry->get("currency");
         $this->cart = $registry->get("cart");
+        $loader->model('extension/total/shipping');
+        $this->model_extension_total_shipping = $registry->get('model_extension_total_shipping');
+
     }
 
 
@@ -139,7 +148,7 @@ class OrderWrapperOpencart extends OrderSafeWrapper
     {
         $products = $this->cart->getProducts();
         foreach ($products as $product)
-            $productsWrappers[] = new OrderProductWrapperOpencart($product, $this->formatAmount($product['total']));
+            $productsWrappers[] = new OrderProductWrapperOpencart($product, $this->formatAmount($product['price']));
         return $productsWrappers;
     }
 
@@ -206,5 +215,17 @@ class OrderWrapperOpencart extends OrderSafeWrapper
     public function getClientIdUnsafe()
     {
         return $this->localOrderInfo['customer_id'];
+    }
+
+    public function getShippingAmountUnsafe()
+    {
+        $total = 0;
+        $total_data = array(
+            'totals' => array(),
+            'taxes'  => array(),
+            'total'  => &$total // только при переде по ссылке получается вернуть значение
+        );
+        $this->model_extension_total_shipping->getTotal($total_data);
+        return $this->formatAmount($total);
     }
 }

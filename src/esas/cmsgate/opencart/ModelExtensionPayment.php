@@ -27,12 +27,8 @@ class ModelExtensionPayment extends Model
 //                        order_id = \'' . (int)$orderId . '\'';
 //                break;
 //        }
-        $sql = 'UPDATE
-                        ' . DB_PREFIX . 'order     
-                    SET
-                   	    payment_custom_field = "' . $this->db->escape(isset($extOrderId) ? json_encode(array("extOrderId" => $extOrderId)) : '') . '"
-                    WHERE
-                        order_id = \'' . (int)$orderId . '\'';
+        $sql = 'UPDATE `' . DB_PREFIX . 'order` SET payment_custom_field = "' . $this->db->escape(isset($extOrderId) ? json_encode(array("extOrderId" => $extOrderId)) : '')
+            . '" WHERE order_id = \'' . (int)$orderId . '\'';
 
         $this->db->query($sql);
     }

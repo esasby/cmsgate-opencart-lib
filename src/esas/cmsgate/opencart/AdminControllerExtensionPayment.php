@@ -91,24 +91,36 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
 
     protected function createBreadcrumbs()
     {
-        $breadcrumbs[] = array(
-            'text' => Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::BREADCRUMBS_MAIN),
-            'href' => SystemSettingsWrapperOpencart::getInstance()->linkAdminHome(),
-            'separator' => false
-        );
-        $breadcrumbs[] = array(
-            'text' => Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::BREADCRUMBS_EXTENSIONS),
-            'href' => SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensions(),
-        );
-        $breadcrumbs[] = array(
-            'text' => Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::BREADCRUMBS_EXTENSIONS_PAYMENTS),
-            'href' => SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensionsPayment(),
-        );
-        $breadcrumbs[] = array(
-            'text' => Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::ADMIN_PAYMENT_METHOD_NAME),
-            'href' => SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensionSettings(),
-            'separator' => ' :: '
-        );// Кнопки
+        $adminHomeLink = SystemSettingsWrapperOpencart::getInstance()->linkAdminHome();
+        if ($adminHomeLink  !== '') {
+            $breadcrumbs[] = array(
+                'text' => Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::BREADCRUMBS_MAIN),
+                'href' => $adminHomeLink,
+                'separator' => false
+            );
+        }
+        $extensionsLink = SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensions();
+        if ($extensionsLink  !== '') {
+            $breadcrumbs[] = array(
+                'text' => Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::BREADCRUMBS_EXTENSIONS),
+                'href' => $extensionsLink,
+            );
+        }
+        $extensionsPaymentLink = SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensionsPayment();
+        if ($extensionsPaymentLink  !== '') {
+            $breadcrumbs[] = array(
+                'text' => Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::BREADCRUMBS_EXTENSIONS_PAYMENTS),
+                'href' => $extensionsPaymentLink,
+            );
+        }
+        $extensionSettingsLink = SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensionSettings();
+        if (isset($extensionSettingsLink)) {
+            $breadcrumbs[] = array(
+                'text' => Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::ADMIN_PAYMENT_METHOD_NAME),
+                'href' => $extensionSettingsLink,
+                'separator' => ' :: '
+            );// Кнопки
+        }
 
         return $breadcrumbs;
     }

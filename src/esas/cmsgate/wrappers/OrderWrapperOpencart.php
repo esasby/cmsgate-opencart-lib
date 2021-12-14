@@ -11,6 +11,7 @@ namespace esas\cmsgate\wrappers;
 use Cart\Cart;
 use Cart\Currency;
 use esas\cmsgate\opencart\ModelExtensionPayment;
+use esas\cmsgate\utils\OpencartVersion;
 use ModelCheckoutOrder;
 use ModelExtensionTotalShipping;
 use Registry;
@@ -60,9 +61,16 @@ class OrderWrapperOpencart extends OrderSafeWrapper
         $this->localOrderInfo = $this->model_checkout_order->getOrder($orderId);
         $this->currency = $registry->get("currency");
         $this->cart = $registry->get("cart");
-        $loader->model('extension/total/shipping');
-        $this->model_extension_total_shipping = $registry->get('model_extension_total_shipping');
-
+        switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v2_1_x:
+                $loader->model('total/shipping');
+                $this->model_extension_total_shipping = $registry->get('model_total_shipping');
+                break;
+            default:
+                $loader->model('extension/total/shipping');
+                $this->model_extension_total_shipping = $registry->get('model_extension_total_shipping');
+                break;
+        }
     }
 
 
@@ -78,8 +86,8 @@ class OrderWrapperOpencart extends OrderSafeWrapper
 
     /**
      * Полное имя покупателя
-     * @throws Throwable
      * @return string
+     * @throws Throwable
      */
     public function getFullNameUnsafe()
     {
@@ -89,8 +97,8 @@ class OrderWrapperOpencart extends OrderSafeWrapper
     /**
      * Мобильный номер покупателя для sms-оповещения
      * (если включено администратором)
-     * @throws Throwable
      * @return string
+     * @throws Throwable
      */
     public function getMobilePhoneUnsafe()
     {
@@ -100,8 +108,8 @@ class OrderWrapperOpencart extends OrderSafeWrapper
     /**
      * Email покупателя для email-оповещения
      * (если включено администратором)
-     * @throws Throwable
      * @return string
+     * @throws Throwable
      */
     public function getEmailUnsafe()
     {
@@ -110,8 +118,8 @@ class OrderWrapperOpencart extends OrderSafeWrapper
 
     /**
      * Физический адрес покупателя
-     * @throws Throwable
      * @return string
+     * @throws Throwable
      */
     public function getAddressUnsafe()
     {
@@ -120,8 +128,8 @@ class OrderWrapperOpencart extends OrderSafeWrapper
 
     /**
      * Общая сумма товаров в заказе
-     * @throws Throwable
      * @return string
+     * @throws Throwable
      */
     public function getAmountUnsafe()
     {
@@ -131,8 +139,8 @@ class OrderWrapperOpencart extends OrderSafeWrapper
 
     /**
      * Валюта заказа (буквенный код)
-     * @throws Throwable
      * @return string
+     * @throws Throwable
      */
     public function getCurrencyUnsafe()
     {
@@ -141,8 +149,8 @@ class OrderWrapperOpencart extends OrderSafeWrapper
 
     /**
      * Массив товаров в заказе
-     * @throws Throwable
      * @return OrderProductWrapper[]
+     * @throws Throwable
      */
     public function getProductsUnsafe()
     {
@@ -152,14 +160,15 @@ class OrderWrapperOpencart extends OrderSafeWrapper
         return $productsWrappers;
     }
 
-    private function formatAmount($amount) {
+    private function formatAmount($amount)
+    {
         return $this->currency->format($amount, $this->localOrderInfo['currency_code'], $this->localOrderInfo['currency_value'], false);
     }
 
     /**
      * BillId (идентификатор хуткигрош) успешно выставленного счета
-     * @throws Throwable
      * @return mixed
+     * @throws Throwable
      */
     public function getExtIdUnsafe()
     {
@@ -209,8 +218,8 @@ class OrderWrapperOpencart extends OrderSafeWrapper
 
     /**
      * Идентификатор клиента
-     * @throws Throwable
      * @return string
+     * @throws Throwable
      */
     public function getClientIdUnsafe()
     {
@@ -222,8 +231,8 @@ class OrderWrapperOpencart extends OrderSafeWrapper
         $total = 0;
         $total_data = array(
             'totals' => array(),
-            'taxes'  => array(),
-            'total'  => &$total // только при переде по ссылке получается вернуть значение
+            'taxes' => array(),
+            'total' => &$total // только при переде по ссылке получается вернуть значение
         );
         $this->model_extension_total_shipping->getTotal($total_data);
         return $this->formatAmount($total);

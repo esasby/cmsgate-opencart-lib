@@ -47,10 +47,13 @@ class SystemSettingsWrapperOpencart extends SystemSettingsWrapper
     public function linkAdminHome()
     {
         switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v2_1_x:
             case OpencartVersion::v2_3_x:
                 return $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], 'SSL');
             case OpencartVersion::v3_x:
                 return $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], true);
+            default:
+                return "";
         }
     }
 
@@ -61,26 +64,36 @@ class SystemSettingsWrapperOpencart extends SystemSettingsWrapper
                 return $this->url->link('extension/extension', 'token=' . $this->session->data['token'], 'SSL');
             case OpencartVersion::v3_x:
                 return $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'], true);
+            default:
+                return "";
         }
     }
 
     public function linkAdminExtensionsPayment()
     {
         switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v2_1_x:
+                return $this->url->link('extension/payment', 'token=' . $this->session->data['token'] , 'SSL');
             case OpencartVersion::v2_3_x:
                 return $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=payment', 'SSL');
             case OpencartVersion::v3_x:
                 return $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment', true);
+            default:
+                return "";
         }
     }
 
     public function linkAdminExtensionSettings($action = null)
     {
         switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v2_1_x:
+                return $this->url->link('payment/' . $this->extensionName . ($action != null ? '/' . $action : ""), 'token=' . $this->session->data['token'], 'SSL');
             case OpencartVersion::v2_3_x:
                 return $this->url->link('extension/payment/' . $this->extensionName . ($action != null ? '/' . $action : ""), 'token=' . $this->session->data['token'], 'SSL');
             case OpencartVersion::v3_x:
                 return $this->url->link('extension/payment/' . $this->extensionName . ($action != null ? '/' . $action : ""), 'user_token=' . $this->session->data['user_token'], true);
+            default:
+                return "";
         }
     }
 
@@ -101,6 +114,7 @@ class SystemSettingsWrapperOpencart extends SystemSettingsWrapper
 
     private function versionLink($path, $action = null, $params = null, $secure = true) {
         switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v2_1_x:
             case OpencartVersion::v2_3_x:
                 return $this->url->link($path . ($action != null ? '/' . $action : ""), $params == null ? "" : $params, 'SSL');
             case OpencartVersion::v3_x:

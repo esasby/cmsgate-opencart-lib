@@ -87,11 +87,10 @@ class SystemSettingsWrapperOpencart extends SystemSettingsWrapper
     {
         switch (OpencartVersion::getVersion()) {
             case OpencartVersion::v2_1_x:
-                return $this->url->link('payment/' . $this->extensionName . ($action != null ? '/' . $action : ""), 'token=' . $this->session->data['token'], 'SSL');
             case OpencartVersion::v2_3_x:
-                return $this->url->link('extension/payment/' . $this->extensionName . ($action != null ? '/' . $action : ""), 'token=' . $this->session->data['token'], 'SSL');
+                return $this->url->link($this->extensionPayment() . ($action != null ? '/' . $action : ""), 'token=' . $this->session->data['token'], 'SSL');
             case OpencartVersion::v3_x:
-                return $this->url->link('extension/payment/' . $this->extensionName . ($action != null ? '/' . $action : ""), 'user_token=' . $this->session->data['user_token'], true);
+                return $this->url->link($this->extensionPayment() . ($action != null ? '/' . $action : ""), 'user_token=' . $this->session->data['user_token'], true);
             default:
                 return "";
         }
@@ -109,7 +108,7 @@ class SystemSettingsWrapperOpencart extends SystemSettingsWrapper
 
     public function linkCatalogExtension($action = null, $args = null, $secure = false)
     {
-        return $this->versionLink('extension/payment/' . $this->extensionName, $action, $args, $secure);
+        return $this->versionLink($this->extensionPayment(), $action, $args, $secure);
     }
 
     private function versionLink($path, $action = null, $params = null, $secure = true) {
@@ -119,6 +118,16 @@ class SystemSettingsWrapperOpencart extends SystemSettingsWrapper
                 return $this->url->link($path . ($action != null ? '/' . $action : ""), $params == null ? "" : $params, 'SSL');
             case OpencartVersion::v3_x:
                 return $this->url->link($path . ($action != null ? '/' . $action : ""), $params == null ? "" : $params, true);
+        }
+    }
+
+    private function extensionPayment() {
+        switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v2_1_x:
+                return 'payment/' . $this->extensionName;
+            case OpencartVersion::v2_3_x:
+            case OpencartVersion::v3_x:
+                return 'extension/payment/' . $this->extensionName;
         }
     }
 }

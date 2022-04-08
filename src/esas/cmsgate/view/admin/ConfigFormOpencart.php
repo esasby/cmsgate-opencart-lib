@@ -82,7 +82,7 @@ class ConfigFormOpencart extends ConfigFormHtml
      */
     public function addCmsManagedFields()
     {
-                $this->managedFields->addField(new ConfigFieldNumber(
+        $this->managedFields->addField(new ConfigFieldNumber(
             ConfigFieldsOpencart::sortOrder(),
             Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::MODULE_SORT_ORDER_LABEL),
             Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::MODULE_SORT_ORDER_DESCRIPTION),

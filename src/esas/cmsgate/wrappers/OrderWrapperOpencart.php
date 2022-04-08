@@ -46,6 +46,8 @@ class OrderWrapperOpencart extends OrderSafeWrapper
      */
     private $cart;
 
+    private $session;
+
     /**
      * OrderWrapperOpencart constructor.
      */
@@ -61,6 +63,7 @@ class OrderWrapperOpencart extends OrderSafeWrapper
         $this->localOrderInfo = $this->model_checkout_order->getOrder($orderId);
         $this->currency = $registry->get("currency");
         $this->cart = $registry->get("cart");
+        $this->session = $registry->get("session");
         switch (OpencartVersion::getVersion()) {
             case OpencartVersion::v2_1_x:
                 $loader->model('total/shipping');
@@ -157,6 +160,11 @@ class OrderWrapperOpencart extends OrderSafeWrapper
         $products = $this->cart->getProducts();
         foreach ($products as $product)
             $productsWrappers[] = new OrderProductWrapperOpencart($product, $this->formatAmount($product['price']));
+        if ($this->session != null && is_array($this->session->data) && array_key_exists('vouchers', $this->session->data)) {
+            $products = $this->session->data['vouchers'];
+            foreach ($products as $product)
+                $productsWrappers[] = new OrderProductVoucherWrapperOpencart($product, $this->formatAmount($product['amount']));
+        }
         return $productsWrappers;
     }
 

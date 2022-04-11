@@ -13,6 +13,7 @@ use esas\cmsgate\Registry;
 use esas\cmsgate\utils\htmlbuilder\Attributes as attribute;
 use esas\cmsgate\utils\htmlbuilder\Elements as element;
 use esas\cmsgate\utils\RequestParams;
+use esas\cmsgate\view\client\ClientViewFieldsOpencart;
 use esas\cmsgate\wrappers\OrderWrapperOpencart;
 use esas\cmsgate\wrappers\SystemSettingsWrapperOpencart;
 
@@ -80,7 +81,7 @@ class ViewBuilderOpencart extends ViewBuilder
                         element::input(
                             attribute::type("submit"),
                             attribute::clazz("btn btn-primary"),
-                            attribute::value(Registry::getRegistry()->getTranslator()->translate("Confirm"))
+                            attribute::value(Registry::getRegistry()->getTranslator()->translate(ClientViewFieldsOpencart::BUTTON_CONFIRM))
                         )
                     )
                 )

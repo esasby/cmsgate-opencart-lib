@@ -26,17 +26,12 @@ class LocaleLoaderOpencart extends LocaleLoaderCms
     public function __construct($registry)
     {
         $this->registry = $registry;
+        $this->addExtraVocabularyDir(dirname(__FILE__));
     }
 
 
     public function getLocale()
     {
         return $this->registry->get("language")->get("code");
-    }
-
-
-    public function getCmsVocabularyDir()
-    {
-        return dirname(__FILE__);
     }
 }

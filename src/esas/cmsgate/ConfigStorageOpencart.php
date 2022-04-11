@@ -91,4 +91,14 @@ class ConfigStorageOpencart extends ConfigStorageCms
         $this->model_setting_setting->editSetting(ConfigStorageOpencart::getSettingsName(), $currentSettings);
         $this->config[$key] = $value;
     }
+
+    public function getConstantConfigValue($key)
+    {
+        switch ($key) {
+            case ConfigFields::useOrderNumber():
+                return true;
+            default:
+                return parent::getConstantConfigValue($key);
+        }
+    }
 }

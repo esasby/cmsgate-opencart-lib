@@ -40,7 +40,7 @@ class CmsConnectorOpencart extends CmsConnector
      * @return $this
      */
     public static function getInstance() {
-        return Registry::getRegistry()->getSystemSettingsWrapper();
+        return Registry::getRegistry()->getCmsConnector();
     }
 
     public function createCommonConfigForm($managedFields)
@@ -114,8 +114,8 @@ class CmsConnectorOpencart extends CmsConnector
         return new CmsConnectorDescriptor(
             "cmsgate-opencart-lib",
             new VersionDescriptor(
-                "v1.14.3",
-                "2022-04-08"
+                "v1.17.0",
+                "2022-04-11"
             ),
             "Cmsgate Opencart connector",
             "https://bitbucket.esas.by/projects/CG/repos/cmsgate-opencart-lib/browse",
@@ -123,16 +123,5 @@ class CmsConnectorOpencart extends CmsConnector
             "opencart"
         );
     }
-
-    public function getConstantConfigValue($key)
-    {
-        switch ($key) {
-            case ConfigFields::useOrderNumber():
-                return true;
-            default:
-                return parent::getConstantConfigValue($key);
-        }
-    }
-
 
 }

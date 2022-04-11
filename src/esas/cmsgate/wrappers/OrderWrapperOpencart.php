@@ -11,6 +11,7 @@ namespace esas\cmsgate\wrappers;
 use Cart\Cart;
 use Cart\Currency;
 use esas\cmsgate\opencart\ModelExtensionPayment;
+use esas\cmsgate\OrderStatus;
 use esas\cmsgate\utils\OpencartVersion;
 use ModelCheckoutOrder;
 use ModelExtensionTotalShipping;
@@ -193,23 +194,25 @@ class OrderWrapperOpencart extends OrderSafeWrapper
 
     /**
      * Текущий статус заказа в CMS
-     * @return mixed
+     * @return OrderStatus
      * @throws Throwable
      */
     public function getStatusUnsafe()
     {
-        return $this->localOrderInfo['order_status_id'];
+        return new OrderStatus(
+            $this->localOrderInfo['order_status_id'],
+            $this->localOrderInfo['order_status_id']);
     }
 
     /**
      * Обновляет статус заказа в БД
-     * @param $newStatus
+     * @param OrderStatus $newStatus
      * @return mixed
      * @throws Throwable
      */
     public function updateStatus($newStatus)
     {
-        $this->model_checkout_order->addOrderHistory($this->getOrderId(), $newStatus);
+        $this->model_checkout_order->addOrderHistory($this->getOrderId(), $newStatus->getOrderStatus());
     }
 
     /**

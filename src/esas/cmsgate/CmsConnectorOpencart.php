@@ -114,7 +114,7 @@ class CmsConnectorOpencart extends CmsConnector
         return new CmsConnectorDescriptor(
             "cmsgate-opencart-lib",
             new VersionDescriptor(
-                "v1.17.0",
+                "v1.17.1",
                 "2022-04-11"
             ),
             "Cmsgate Opencart connector",

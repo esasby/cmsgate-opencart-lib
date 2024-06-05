@@ -1,7 +1,7 @@
 <?php
 namespace esas\cmsgate\opencart;
 
-use Controller;
+use \Opencart\System\Engine\Controller as Controller;
 use esas\cmsgate\Registry;
 use esas\cmsgate\utils\OpencartVersion;
 use esas\cmsgate\utils\StringUtils;
@@ -17,20 +17,30 @@ class ControllerExtensionPayment extends Controller
     {
         parent::__construct($registry);
         $this->extensionName = Registry::getRegistry()->getPaySystemName();
-        $this->language->load('extension/payment/' . $this->extensionName);
+        switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v2_1_x:
+            case OpencartVersion::v2_3_x:
+            case OpencartVersion::v3_x:
+                $this->language->load('extension/payment/' . $this->extensionName);
+            case OpencartVersion::v4_x:
+                $this->language->load('extension/cmsgate_opencart_hutkigrosh/payment/' . $this->extensionName);
+        }
     }
 
 
-    protected function getView($viewName = null) {
+    public function getView($viewName = null)
+    {
         if (StringUtils::isNullOrEmptyString($viewName))
             $viewName = $this->extensionName;
-        switch (OpencartVersion::getVersion()){
+        switch (OpencartVersion::getVersion()) {
             case OpencartVersion::v2_1_x:
-                return 'payment/' . $viewName .'.tpl';
+                return 'payment/' . $viewName . '.tpl';
             case OpencartVersion::v2_3_x:
-                return 'extension/payment/' . $viewName .'.tpl';
+                return 'extension/payment/' . $viewName . '.tpl';
             case OpencartVersion::v3_x:
                 return 'extension/payment/' . $viewName;
+            case OpencartVersion::v4_x:
+                return 'extension/cmsgate_opencart_hutkigrosh/payment/' . $viewName;
         }
     }
 

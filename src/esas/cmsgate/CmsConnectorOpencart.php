@@ -23,34 +23,50 @@ use esas\cmsgate\wrappers\SystemSettingsWrapperOpencart;
 class CmsConnectorOpencart extends CmsConnector
 {
     protected $opencartRegistry;
-    private $session;
 
     /**
      * @param $registry
      */
-    public function __construct($registry)
+    public function __construct()
     {
         parent::__construct();
-        $this->opencartRegistry = $registry;
-        $this->session = $registry->get('session');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOpencartSession()
+    {
+        return $this->getOpencartRegistry()->get('session');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOpencartRegistry()
+    {
+        if (!isset($this->opencartRegistry) && isset($GLOBALS['registry']))
+            $this->opencartRegistry = $GLOBALS['registry'];
+        return $this->opencartRegistry;
     }
 
     /**
      * Для удобства работы в IDE и подсветки синтаксиса.
      * @return $this
      */
-    public static function getInstance() {
+    public static function getInstance()
+    {
         return Registry::getRegistry()->getCmsConnector();
     }
 
     public function createCommonConfigForm($managedFields)
     {
-        $configForm  = new ConfigFormOpencart(
+        $configForm = new ConfigFormOpencart(
             $managedFields,
             AdminViewFields::CONFIG_FORM_COMMON,
             SystemSettingsWrapperOpencart::getInstance()->linkAdminExtensionSettings("commonConfigFormAction"),
             null,
-            $this->opencartRegistry);
+            $this->getOpencartRegistry());
         $configForm->addSubmitButton(AdminViewFields::CONFIG_FORM_BUTTON_SAVE);
         $configForm->addSubmitButton(AdminViewFields::CONFIG_FORM_BUTTON_DOWNLOAD_LOG);
         $configForm->addSubmitButton(AdminViewFields::CONFIG_FORM_BUTTON_CANCEL);
@@ -61,7 +77,7 @@ class CmsConnectorOpencart extends CmsConnector
 
     public function createSystemSettingsWrapper()
     {
-        return new SystemSettingsWrapperOpencart($this->opencartRegistry);
+        return new SystemSettingsWrapperOpencart($this->getOpencartRegistry());
     }
 
 
@@ -72,7 +88,7 @@ class CmsConnectorOpencart extends CmsConnector
      */
     public function createOrderWrapperByOrderId($orderId)
     {
-        return new OrderWrapperOpencart($orderId, $this->opencartRegistry);
+        return new OrderWrapperOpencart($orderId, $this->getOpencartRegistry());
     }
 
     /**
@@ -81,7 +97,7 @@ class CmsConnectorOpencart extends CmsConnector
      */
     public function createOrderWrapperForCurrentUser()
     {
-        $orderId = $this->session->data['order_id']; //todo check
+        $orderId = $this->getOpencartSession()->data['order_id']; //todo check
         return $this->createOrderWrapperByOrderId($orderId);
     }
 
@@ -92,7 +108,7 @@ class CmsConnectorOpencart extends CmsConnector
      */
     public function createOrderWrapperByExtId($extId)
     {
-        $opencartCmsgateModel = new ModelExtensionPayment($this->opencartRegistry);
+        $opencartCmsgateModel = new ModelExtensionPayment($this->getOpencartRegistry());
         $orderId = $opencartCmsgateModel->getOrderIdByExtId($extId);
         if ($orderId == null || $orderId == '0')
             return null;
@@ -101,12 +117,12 @@ class CmsConnectorOpencart extends CmsConnector
 
     public function createConfigStorage()
     {
-        return new ConfigStorageOpencart($this->opencartRegistry);
+        return new ConfigStorageOpencart($this->getOpencartRegistry());
     }
 
     public function createLocaleLoader()
     {
-        return new LocaleLoaderOpencart($this->opencartRegistry);
+        return new LocaleLoaderOpencart($this->getOpencartRegistry());
     }
 
     public function createCmsConnectorDescriptor()

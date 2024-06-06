@@ -50,7 +50,6 @@ class ModelExtensionPayment extends Model
     public function getMethod($address, $total)
     {
         $moduleName = Registry::getRegistry()->getPaySystemName();
-        $status = true;
         switch (OpencartVersion::getVersion()) {
             case OpencartVersion::v2_1_x:
             case OpencartVersion::v2_3_x:
@@ -63,7 +62,7 @@ class ModelExtensionPayment extends Model
                     'sort_order' => $this->config->get(ConfigFieldsOpencart::sortOrder())
                 );
             case OpencartVersion::v4_x:
-                $this->language->load('extension/cmsgate_opencart_hutkigrosh/payment/' . $moduleName);
+                $this->language->load('extension/cmsgate_opencart_' . $moduleName . '/payment/' . $moduleName);
                 $method_data = $option_data = [];
                 $option_data[$moduleName] = [
                     'code' => $moduleName . '.' . $moduleName,

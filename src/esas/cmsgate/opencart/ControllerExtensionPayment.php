@@ -23,7 +23,7 @@ class ControllerExtensionPayment extends Controller
             case OpencartVersion::v3_x:
                 $this->language->load('extension/payment/' . $this->extensionName);
             case OpencartVersion::v4_x:
-                $this->language->load('extension/cmsgate_opencart_hutkigrosh/payment/' . $this->extensionName);
+                $this->language->load('extension/cmsgate_opencart_' . $this->extensionName . '/payment/' . $this->extensionName);
         }
     }
 
@@ -40,7 +40,7 @@ class ControllerExtensionPayment extends Controller
             case OpencartVersion::v3_x:
                 return 'extension/payment/' . $viewName;
             case OpencartVersion::v4_x:
-                return 'extension/cmsgate_opencart_hutkigrosh/payment/' . $viewName;
+                return 'extension/cmsgate_opencart_' . $viewName . '/payment/' . $viewName;
         }
     }
 

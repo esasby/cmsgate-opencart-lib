@@ -139,7 +139,7 @@ class SystemSettingsWrapperOpencart extends SystemSettingsWrapper
             case OpencartVersion::v3_x:
                 return 'extension/payment/' . $this->extensionName;
             case OpencartVersion::v4_x:
-                return 'extension/cmsgate_opencart_hutkigrosh/payment/' . $this->extensionName;
+                return 'extension/cmsgate_opencart_' . $this->extensionName . '/payment/' . $this->extensionName;
         }
     }
 }

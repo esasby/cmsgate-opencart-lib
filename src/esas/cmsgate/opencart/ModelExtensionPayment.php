@@ -2,8 +2,9 @@
 namespace esas\cmsgate\opencart;
 
 use esas\cmsgate\ConfigFieldsOpencart;
+use esas\cmsgate\utils\OpencartVersion;
 use esas\cmsgate\Registry;
-use Model;
+use \Opencart\System\Engine\Model as Model;
 
 class ModelExtensionPayment extends Model
 {
@@ -49,19 +50,33 @@ class ModelExtensionPayment extends Model
     public function getMethod($address, $total)
     {
         $moduleName = Registry::getRegistry()->getPaySystemName();
-        $this->language->load('extension/payment/' . $moduleName);
+        switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v2_1_x:
+            case OpencartVersion::v2_3_x:
+            case OpencartVersion::v3_x:
+                $this->language->load('extension/payment/' . $moduleName);
+                return array(
+                    'code' => $moduleName,
+                    'title' => Registry::getRegistry()->getConfigWrapper()->getPaymentMethodName(),
+                    'terms' => Registry::getRegistry()->getConfigWrapper()->getPaymentMethodDetails(),
+                    'sort_order' => $this->config->get(ConfigFieldsOpencart::sortOrder())
+                );
+            case OpencartVersion::v4_x:
+                $this->language->load('extension/cmsgate_opencart_' . $moduleName . '/payment/' . $moduleName);
+                $method_data = $option_data = [];
+                $option_data[$moduleName] = [
+                    'code' => $moduleName . '.' . $moduleName,
+                    'name' => Registry::getRegistry()->getConfigWrapper()->getPaymentMethodDetails()
+                ];
+                $method_data = [
+                    'code' => $moduleName,
+                    'name' => Registry::getRegistry()->getConfigWrapper()->getPaymentMethodName(),
+                    'option' => $option_data,
+                    'sort_order' => $this->config->get(ConfigFieldsOpencart::sortOrder())
+                ];
+                return $method_data;
 
-        $status = true;
-
-        if ($status) {
-            return array(
-                'code' => $moduleName,
-                'title' => Registry::getRegistry()->getConfigWrapper()->getPaymentMethodName(),
-                'terms' => Registry::getRegistry()->getConfigWrapper()->getPaymentMethodDetails(),
-                'sort_order' => $this->config->get(ConfigFieldsOpencart::sortOrder())
-            );
-        } else {
-            return array();
         }
+        return array();
     }
 }

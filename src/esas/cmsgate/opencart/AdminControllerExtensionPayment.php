@@ -10,6 +10,7 @@ use esas\cmsgate\utils\Logger;
 use esas\cmsgate\view\admin\AdminViewFieldsOpencart;
 use esas\cmsgate\view\ViewBuilderOpencart;
 use esas\cmsgate\wrappers\SystemSettingsWrapperOpencart;
+use esas\cmsgate\utils\OpencartVersion;
 use Exception;
 use Throwable as Th;
 
@@ -27,7 +28,7 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
     protected function showSettings()
     {
         try {
-            $this->load->language('extension/payment/' . $this->extensionName);
+            $this->load->language($this->getView());
             $this->document->setTitle($this->language->get('heading_title'));
             $data['heading_title'] = Registry::getRegistry()->getTranslator()->translate(AdminViewFieldsOpencart::ADMIN_PAYMENT_METHOD_NAME);
             $data['breadcrumbs'] = $this->createBreadcrumbs();
@@ -37,6 +38,7 @@ class AdminControllerExtensionPayment extends ControllerExtensionPayment
             $data['footer'] = $this->load->controller('common/footer');
             $configForm = Registry::getRegistry()->getConfigForm();
             $data['configForm'] = $configForm;
+            $data['old_style'] = in_array(OpencartVersion::getVersion(), array(OpencartVersion::v2_1_x, OpencartVersion::v2_3_x, OpencartVersion::v3_x)) ? true : false;
             $this->addExtraConfigForms($data);
             $data["messages"] = ViewBuilderOpencart::elementAdminMessages();
             $this->response->setOutput($this->load->view($this->getView(), $data));

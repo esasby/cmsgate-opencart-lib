@@ -23,6 +23,7 @@ use esas\cmsgate\view\admin\fields\ConfigFieldPassword;
 use esas\cmsgate\view\admin\fields\ConfigFieldTextarea;
 use esas\cmsgate\view\admin\fields\ListOption;
 use esas\cmsgate\view\admin\validators\ValidatorInteger;
+use esas\cmsgate\utils\OpencartVersion;
 
 class ConfigFormOpencart extends ConfigFormHtml
 {
@@ -47,31 +48,58 @@ class ConfigFormOpencart extends ConfigFormHtml
 
     public function generate()
     {
-        return element::div(
-            attribute::clazz("panel panel-default"),
-            element::div(
-                attribute::clazz("panel-heading"),
-                element::h1(
-                    attribute::clazz("panel-title"),
-                    element::i(
-                        attribute::clazz("fa fa-pencil")
+        switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v2_1_x:
+            case OpencartVersion::v2_3_x:
+            case OpencartVersion::v3_x:
+                return element::div(
+                    attribute::clazz("panel panel-default"),
+                    element::div(
+                        attribute::clazz("panel-heading"),
+                        element::h1(
+                            attribute::clazz("panel-title"),
+                            element::i(
+                                attribute::clazz("fa fa-pencil")
+                            ),
+                            element::content(" " . $this->getHeadingTitle())
+                        )
                     ),
-                    element::content(" " . $this->getHeadingTitle())
-                )
-            ),
-            element::div(
-                attribute::clazz("panel-body"),
-                element::form(
-                    attribute::action($this->getSubmitUrl()),
-                    attribute::method("post"),
-                    attribute::enctype("multipart/form-data"),
-                    attribute::id("config-form"),
-                    attribute::clazz("form-horizontal"),
-                    parent::generate(), // добавляем поля
-                    $this->elementSubmitButtons()
-                )
-            )
-        );
+                    element::div(
+                        attribute::clazz("panel-body"),
+                        element::form(
+                            attribute::action($this->getSubmitUrl()),
+                            attribute::method("post"),
+                            attribute::enctype("multipart/form-data"),
+                            attribute::id("config-form"),
+                            attribute::clazz("form-horizontal"),
+                            parent::generate(), // добавляем поля
+                            $this->elementSubmitButtons()
+                        )
+                    )
+                );
+            case OpencartVersion::v4_x:
+                return element::div(
+                    attribute::clazz("card"),
+                    element::div(
+                        attribute::clazz("card-header"),
+                        element::i(
+                            attribute::clazz("fa-solid fa-pencil")
+                        ),
+                        element::content(" " . $this->getHeadingTitle())
+                    ),
+                    element::div(
+                        attribute::clazz("card-body"),
+                        element::form(
+                            attribute::action($this->getSubmitUrl()),
+                            attribute::method("post"),
+                            attribute::enctype("multipart/form-data"),
+                            attribute::id("form-checkout"),
+                            parent::generate(), // добавляем поля
+                            $this->elementSubmitButtons()
+                        )
+                    )
+                );
+        }
     }
 
 
@@ -116,16 +144,33 @@ class ConfigFormOpencart extends ConfigFormHtml
 
     public static function elementLabel(ConfigField $configField)
     {
-        return
-            element::label(
-                attribute::clazz("col-sm-2 control-label"),
-                attribute::forr("input-" . $configField->getKey()),
-                element::span(
-                    attribute::data_toggle("tooltip"),
-                    attribute::title($configField->getDescription()),
-                    element::content($configField->getName())
-                )
-            );
+        switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v2_1_x:
+            case OpencartVersion::v2_3_x:
+            case OpencartVersion::v3_x:
+                return
+                    element::label(
+                        attribute::clazz("col-sm-2 control-label"),
+                        attribute::forr("input-" . $configField->getKey()),
+                        element::span(
+                            attribute::data_toggle("tooltip"),
+                            attribute::title($configField->getDescription()),
+                            element::content($configField->getName())
+                        )
+                    );
+            case OpencartVersion::v4_x:
+                return
+                    element::label(
+                        attribute::clazz("col-sm-2 col-form-label"),
+                        attribute::forr("input-" . $configField->getKey()),
+                        element::span(
+                            attribute::data_toggle("tooltip"),
+                            attribute::title($configField->getDescription()),
+                            element::content($configField->getName())
+                        )
+                    );
+        }
+
     }
 
     protected function elementInputSubmit($name, $value)
@@ -141,7 +186,14 @@ class ConfigFormOpencart extends ConfigFormHtml
 
     private static function attributeFormClass(ConfigField $configField)
     {
-        return attribute::clazz("form-group" . ($configField->isRequired() ? ' required' : ''));
+        switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v2_1_x:
+            case OpencartVersion::v2_3_x:
+            case OpencartVersion::v3_x:
+                return attribute::clazz("form-group" . ($configField->isRequired() ? ' required' : ''));
+            case OpencartVersion::v4_x:
+                return attribute::clazz("row mb-3" . ($configField->isRequired() ? ' required' : ''));
+        }
     }
 
     private static function elementInput(ConfigField $configField, $type)
@@ -216,24 +268,56 @@ class ConfigFormOpencart extends ConfigFormHtml
 
     function generateCheckboxField(ConfigFieldCheckbox $configField)
     {
-        return
-            element::div(
-                self::attributeFormClass($configField),
-                self::elementValidationError($configField),
-                self::elementLabel($configField),
-                element::div(
-                    attribute::clazz("col-sm-10"),
-                    element::input(
-                        attribute::type("checkbox"),
-                        attribute::name($configField->getKey()),
-                        self::attributeInputId($configField),
-                        attribute::value("1"),
-                        attribute::checked($configField->isChecked()),
-                        attribute::placeholder($configField->getName()),
-                        attribute::clazz("form-control")
-                    )
-                )
-            );
+        switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v2_1_x:
+            case OpencartVersion::v2_3_x:
+            case OpencartVersion::v3_x:
+                return
+                    element::div(
+                        self::attributeFormClass($configField),
+                        self::elementValidationError($configField),
+                        self::elementLabel($configField),
+                        element::div(
+                            attribute::clazz("col-sm-10"),
+                            element::input(
+                                attribute::type("checkbox"),
+                                attribute::name($configField->getKey()),
+                                self::attributeInputId($configField),
+                                attribute::value("1"),
+                                attribute::checked($configField->isChecked()),
+                                attribute::placeholder($configField->getName()),
+                                attribute::clazz("form-control")
+                            )
+                        )
+                    );
+            case OpencartVersion::v4_x:
+                return
+                    element::div(
+                        self::attributeFormClass($configField),
+                        self::elementValidationError($configField),
+                        self::elementLabel($configField),
+                        element::div(
+                            attribute::clazz("col-sm-10"),
+                            element::div(
+                                attribute::clazz("form-check form-switch form-switch-lg"),
+                                element::input(
+                                    attribute::type("hidden"),
+                                    attribute::name($configField->getKey()),
+                                    attribute::value("0")
+                                ),
+                                element::input(
+                                    attribute::type("checkbox"),
+                                    attribute::name($configField->getKey()),
+                                    self::attributeInputId($configField),
+                                    attribute::value("1"),
+                                    attribute::checked($configField->isChecked()),
+                                    attribute::placeholder($configField->getName()),
+                                    attribute::clazz("form-check-input")
+                                )
+                            )
+                        )
+                    );
+        }
     }
 
     public function generateFileField(ConfigFieldFile $configField)

@@ -15,7 +15,7 @@ use esas\cmsgate\OrderStatus;
 use esas\cmsgate\utils\OpencartVersion;
 use ModelCheckoutOrder;
 use ModelExtensionTotalShipping;
-use Registry;
+use Opencart\System\Engine\Registry as Registry;
 use Throwable;
 
 class OrderWrapperOpencart extends OrderSafeWrapper
@@ -69,6 +69,9 @@ class OrderWrapperOpencart extends OrderSafeWrapper
             case OpencartVersion::v2_1_x:
                 $loader->model('total/shipping');
                 $this->model_extension_total_shipping = $registry->get('model_total_shipping');
+                break;
+            case OpencartVersion::v4_x:
+
                 break;
             default:
                 $loader->model('extension/total/shipping');
@@ -212,7 +215,14 @@ class OrderWrapperOpencart extends OrderSafeWrapper
      */
     public function updateStatus($newStatus)
     {
-        $this->model_checkout_order->addOrderHistory($this->getOrderId(), $newStatus->getOrderStatus());
+        switch (OpencartVersion::getVersion()) {
+            case OpencartVersion::v4_x:
+                $this->model_checkout_order->addHistory($this->getOrderId(), $newStatus->getOrderStatus(), true);
+                break;
+            default:
+                $this->model_checkout_order->addOrderHistory($this->getOrderId(), $newStatus->getOrderStatus());
+                break;
+        }
     }
 
     /**

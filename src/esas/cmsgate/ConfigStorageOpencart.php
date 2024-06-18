@@ -39,6 +39,7 @@ class ConfigStorageOpencart extends ConfigStorageCms
             case OpencartVersion::v2_3_x:
                 return Registry::getRegistry()->getPaySystemName();
             case OpencartVersion::v3_x:
+            case OpencartVersion::v4_x:
                 return 'payment_' . Registry::getRegistry()->getPaySystemName();
         }
     }

@@ -130,11 +130,11 @@ class CmsConnectorOpencart extends CmsConnector
         return new CmsConnectorDescriptor(
             "cmsgate-opencart-lib",
             new VersionDescriptor(
-                "v1.17.1",
-                "2022-04-11"
+                "v2.0.0",
+                "2024-06-18"
             ),
             "Cmsgate Opencart connector",
-            "https://bitbucket.esas.by/projects/CG/repos/cmsgate-opencart-lib/browse",
+            "https://github.com/esasby/cmsgate-opencart-lib",
             VendorDescriptor::esas(),
             "opencart"
         );

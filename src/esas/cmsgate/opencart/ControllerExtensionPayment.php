@@ -1,12 +1,21 @@
 <?php
 namespace esas\cmsgate\opencart;
 
-use \Opencart\System\Engine\Controller as Controller;
 use esas\cmsgate\Registry;
 use esas\cmsgate\utils\OpencartVersion;
 use esas\cmsgate\utils\StringUtils;
 
-class ControllerExtensionPayment extends Controller
+if (class_exists('Controller')) {
+    class MiddleController extends \Controller
+    {
+    }
+} elseif (class_exists('\Opencart\System\Engine\Controller')) {
+    class MiddleController extends \Opencart\System\Engine\Controller
+    {
+    }
+}
+
+class ControllerExtensionPayment extends MiddleController
 {
     protected $extensionName;
 

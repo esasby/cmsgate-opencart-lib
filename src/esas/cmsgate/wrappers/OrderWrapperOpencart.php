@@ -15,7 +15,6 @@ use esas\cmsgate\OrderStatus;
 use esas\cmsgate\utils\OpencartVersion;
 use ModelCheckoutOrder;
 use ModelExtensionTotalShipping;
-use Opencart\System\Engine\Registry as Registry;
 use Throwable;
 
 class OrderWrapperOpencart extends OrderSafeWrapper
@@ -52,7 +51,7 @@ class OrderWrapperOpencart extends OrderSafeWrapper
     /**
      * OrderWrapperOpencart constructor.
      */
-    public function __construct($orderId, Registry $registry)
+    public function __construct($orderId, $registry)
     {
         parent::__construct();
         $loader = $registry->get("load");

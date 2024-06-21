@@ -4,9 +4,18 @@ namespace esas\cmsgate\opencart;
 use esas\cmsgate\ConfigFieldsOpencart;
 use esas\cmsgate\utils\OpencartVersion;
 use esas\cmsgate\Registry;
-use \Opencart\System\Engine\Model as Model;
 
-class ModelExtensionPayment extends Model
+if (class_exists('Model')) {
+    class MiddleModel extends \Model
+    {
+    }
+} elseif (class_exists('\Opencart\System\Engine\Model')) {
+    class MiddleModel extends \Opencart\System\Engine\Model
+    {
+    }
+}
+
+class ModelExtensionPayment extends MiddleModel
 {
     public function saveBillId($orderId, $extOrderId)
     {
